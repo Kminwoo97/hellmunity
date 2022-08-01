@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 public class HomeController {
 
     //HttpSession을 사용한 로그인 화면으로 이동
-    @GetMapping("/")
+    @GetMapping("/api")
     public String homeLogin(HttpServletRequest request, Model model) {
 
         //옵션을 false 줘서 로그인 한 사용자만 정보를 가져온다.
@@ -24,7 +24,8 @@ public class HomeController {
         }
 
         //세션에 회원 데이터가 없으면 home으로 이동
-        Member loginMember = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);
+        //Member loginMember = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);\
+        Member loginMember = (Member)session.getAttribute(session.getId());
         if(loginMember == null){
             return "home";
         }

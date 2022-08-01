@@ -28,7 +28,7 @@ public class LoginController {
 
 
     //로그인 페이지로 이동
-    @GetMapping("/login")
+    @GetMapping("/api/login")
     public String loginForm(@ModelAttribute("loginForm") MemberSigninDto memberSigninDto) {
         return "login/loginForm";
     }
@@ -36,16 +36,16 @@ public class LoginController {
 
 
     //4. filter를 적용한 로그인
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public String login(@Valid @ModelAttribute("loginForm") MemberSigninDto form, BindingResult bindingResult, HttpServletRequest request,
-                          @RequestParam(defaultValue = "/") String redirectURL) {
+                        @RequestParam(defaultValue = "/api") String redirectURL) {
 
         //유효하지 않은 입력 폼 입력 시 로그인 폼으로 이동
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
 
-       Optional<Member> loginMember = (Optional<Member>) loginService.login(form.getLoginId(), form.getPassword());
+        Optional<Member> loginMember = (Optional<Member>) loginService.login(form.getLoginId(), form.getPassword());
 
         //조회된 회원이 없는 경우
         if (loginMember.isEmpty()) {
@@ -61,7 +61,10 @@ public class LoginController {
         //없으면 신규 생성해서 반환한다.
         HttpSession session = request.getSession(true);
         //세션에 로그인 회원 정보를 보관한다.
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.get());
+        //session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.get()); //초기
+        System.out.println(session.getId() + "   __세션 아이디__"); //나중 방법
+        session.setAttribute(session.getId(), loginMember.get());
+
 
 
         /*filter 에서 넘겨받은 redirecURL을 적용 시키기 위해서 이렇게 바꾸었다.
@@ -74,13 +77,13 @@ public class LoginController {
 
 
     //3. HttpSession 을 이요한 로그아웃
-    @PostMapping("logout")
+    @PostMapping("/api/logout")
     public String logoutV3(HttpServletRequest request) {
         //세션을 없애는 것이 목적이기 때문에 false 옵션을 주고 조회해 온다.
         HttpSession session = request.getSession(false);
         if(session != null){
             session.invalidate(); //세셔 만료
         }
-        return "redirect:/";
+        return "redirect:/api";
     }
 }

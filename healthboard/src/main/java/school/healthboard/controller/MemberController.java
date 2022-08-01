@@ -24,7 +24,7 @@ public class MemberController {
     /**
      * 회원가입 페이지로 이동
      */
-    @GetMapping("/members/add")
+    @GetMapping("/api/members/add")
     public String addForm(@ModelAttribute("member") MemberSignupDto memberSignupDto) {
         return "/members/addMemberForm";
     }
@@ -32,7 +32,7 @@ public class MemberController {
     /**
      * 회원 가입
      */
-    @PostMapping("/members/add")
+    @PostMapping("/api/members/add")
     public String createMember(@Valid @ModelAttribute("member") MemberSignupDto memberSignupDto, BindingResult bindingResult){
 
         if(bindingResult.hasErrors()) {
@@ -41,7 +41,7 @@ public class MemberController {
         }
 
         Member createMember = memberService.createMember(memberSignupDto);
-        return "redirect:/";
+        return "redirect:/api";
     }
 
 }

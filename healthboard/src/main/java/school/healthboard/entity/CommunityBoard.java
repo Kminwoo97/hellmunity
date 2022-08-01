@@ -1,6 +1,7 @@
 package school.healthboard.entity;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 public class CommunityBoard {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long communityBoardId;

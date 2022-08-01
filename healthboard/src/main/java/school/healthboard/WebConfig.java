@@ -1,10 +1,12 @@
 package school.healthboard;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import school.healthboard.interceptor.LogInterceptor;
 import school.healthboard.interceptor.LoginCheckInterceptor;
 
+@Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
@@ -21,6 +23,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/members/add", "/login", "/logout", "/css/**", "/*.ico");
+                .excludePathPatterns("/api", "/api/members/add", "/api/login", "/api/logout", "/css/**", "/*.ico");
     }
 }
