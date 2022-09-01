@@ -8,14 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import school.healthboard.SessionConst;
-import school.healthboard.dto.MemberSigninDto;
+import school.healthboard.entity.dto.MemberSigninDto;
 import school.healthboard.entity.Member;
 import school.healthboard.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -28,7 +26,7 @@ public class LoginController {
 
 
     //로그인 페이지로 이동
-    @GetMapping("/api/login")
+    @GetMapping("/login")
     public String loginForm(@ModelAttribute("loginForm") MemberSigninDto memberSigninDto) {
         return "login/loginForm";
     }
@@ -36,9 +34,9 @@ public class LoginController {
 
 
     //4. filter를 적용한 로그인
-    @PostMapping("/api/login")
+    @PostMapping("/login")
     public String login(@Valid @ModelAttribute("loginForm") MemberSigninDto form, BindingResult bindingResult, HttpServletRequest request,
-                        @RequestParam(defaultValue = "/api") String redirectURL) {
+                        @RequestParam(defaultValue = "/") String redirectURL) {
 
         //유효하지 않은 입력 폼 입력 시 로그인 폼으로 이동
         if (bindingResult.hasErrors()) {
@@ -60,10 +58,8 @@ public class LoginController {
         //request.getSession()은 세션이 있으면 반환하고
         //없으면 신규 생성해서 반환한다.
         HttpSession session = request.getSession(true);
-        //세션에 로그인 회원 정보를 보관한다.
-        //session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.get()); //초기
-        System.out.println(session.getId() + "   __세션 아이디__"); //나중 방법
-        session.setAttribute(session.getId(), loginMember.get());
+        //세션에 로그인 회원 번호를 저장한다.
+        session.setAttribute("memberNo", loginMember.get().getMemberNo());
 
 
 
@@ -77,13 +73,13 @@ public class LoginController {
 
 
     //3. HttpSession 을 이요한 로그아웃
-    @PostMapping("/api/logout")
+    @PostMapping("/logout")
     public String logoutV3(HttpServletRequest request) {
         //세션을 없애는 것이 목적이기 때문에 false 옵션을 주고 조회해 온다.
         HttpSession session = request.getSession(false);
         if(session != null){
             session.invalidate(); //세셔 만료
         }
-        return "redirect:/api";
+        return "redirect:/";
     }
 }

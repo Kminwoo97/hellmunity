@@ -1,16 +1,17 @@
-package school.healthboard.dto;
+package school.healthboard.entity.dto;
 
 import lombok.Data;
 import school.healthboard.entity.Member;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 //로그인 DTO
 @Data
 public class MemberSigninDto {
 
-    @NotEmpty
+    @NotBlank
     private String loginId;
-    @NotEmpty
+    @NotBlank
     private String password;
 }

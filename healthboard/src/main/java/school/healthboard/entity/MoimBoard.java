@@ -11,17 +11,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class MoimBoard {
+public class MoimBoard extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long moimBoardId;
 
     private String moimBoardTitle;
     private LocalDateTime moimBoardDay;
 
-    @CreatedDate
-    private String moimBoardPlace;
-    @LastModifiedBy
-    private String moimBoardImage;
 
     private int moimBoardTotalPerson;
     private int moimBoardCurPerson;

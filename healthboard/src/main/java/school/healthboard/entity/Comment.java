@@ -1,7 +1,6 @@
 package school.healthboard.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -11,16 +10,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class Comment {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Comment extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
     private String commentContent;
-
-    @CreatedDate
-    private LocalDateTime commentRegister;
-    @LastModifiedBy
-    private LocalDateTime commentUpdate;
 
 
     @ManyToOne
@@ -31,4 +27,10 @@ public class Comment {
     @JoinColumn(name = "communityBoardId")
     private CommunityBoard board;
 
+    @Builder
+    public Comment(String commentContent, Member writer, CommunityBoard board) {
+        this.commentContent = commentContent;
+        this.writer = writer;
+        this.board = board;
+    }
 }

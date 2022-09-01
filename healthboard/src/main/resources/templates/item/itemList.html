@@ -6,20 +6,28 @@
 </head>
 <body>
 <button class="w-100 btn btn-secondary btn-lg" type="button"
-        th:onclick="|location.href='@{/api/item/add}'|">
+        th:onclick="|location.href='@{/item/add}'|">
     board 등록
 </button>
+
+
 
 <table>
     <tr>
         <td>글 번호</td>
         <td>제목</td>
         <td>작성자</td>
+        <td>생성 시간</td>
     </tr>
     <tr th:each="board : ${boardList}">
         <td th:text="${board.communityBoardId}">board 번호</td>
-        <td th:text="${board.communityBoardTitle}">board 제목</td>
-        <td th:text="${board.writer.memberNickname}">board 작성자</td>
+        <td>
+            <a href="#" th:text="${board.communityBoardTitle}"
+               th:href="@{/item/{id}(id=${board.communityBoardId})}">
+            </a>
+        </td>
+        <td th:text="${board.writer.memberId}">board 작성자</td>
+        <td th:text="${board.createdDate}">생성 시간</td>
     </tr>
 </table>
 </body>

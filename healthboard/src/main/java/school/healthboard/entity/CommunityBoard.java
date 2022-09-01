@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class CommunityBoard {
+public class CommunityBoard extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long communityBoardId;
 
@@ -22,16 +22,17 @@ public class CommunityBoard {
 
     private String communityBoardImage;
 
-    @CreatedDate
-    private LocalDateTime communityBoardRegister;
-    @LastModifiedBy
-    private LocalDateTime communityBoardUpdate;
 
     @ManyToOne
     @JoinColumn(name = "memberNo")
     private Member writer;
 
-    @OneToMany(mappedBy = "commentId")
+    @OneToMany(mappedBy = "board")
     private List<Comment> commentList = new ArrayList<>();
 
+
+    public void setWriter(Member writer) {
+        this.writer = writer;
+        writer.getCommunityBoardList().add(this);
+    }
 }

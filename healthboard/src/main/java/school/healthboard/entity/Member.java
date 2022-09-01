@@ -19,20 +19,20 @@ public class Member {
     @Column(unique = true)
     private String memberId;
     private String memberPasswd;
-    private String memberNickname;
+    private String memberName;
     private int memberAge;
 
-    @OneToMany(mappedBy = "communityBoardId")
+    @OneToMany(mappedBy = "writer")
     private List<CommunityBoard> communityBoardList = new ArrayList<CommunityBoard>();
 
-    @OneToMany(mappedBy = "moimBoardId")
+    @OneToMany(mappedBy = "writer")
     private List<MoimBoard> moimBoardList = new ArrayList<MoimBoard>();
 
 
     @Builder
-    public Member(String memberId, String memberPasswd, String memberNickname) {
+    public Member(String memberId, String memberPasswd, String memberName) {
         this.memberId = memberId;
         this.memberPasswd = memberPasswd;
-        this.memberNickname = memberNickname;
+        this.memberName = memberName;
     }
 }
