@@ -43,7 +43,7 @@ public class TestData {
         communityBoardRepository.save(communityBoard1);
 
         CommunityBoard communityBoard2 = new CommunityBoard();
-        communityBoard2.setCommunityBoardTitle("훌랄라");
+        communityBoard2.setCommunityBoardTitle("테스트 테스트");
         communityBoard2.setCommunityBoardDetail("훌랄라라라");
         communityBoard2.setWriter(saveMember2);
         communityBoardRepository.save(communityBoard2);
@@ -53,5 +53,13 @@ public class TestData {
         communityBoard3.setCommunityBoardDetail("아라라라라");
         communityBoard3.setWriter(saveMember3);
         communityBoardRepository.save(communityBoard3);
+
+        for(int i=0; i<=100; i++){
+            CommunityBoard test = new CommunityBoard();
+            test.setCommunityBoardTitle("test"+i);
+            test.setWriter(saveMember3);
+            test.setCommunityBoardDetail("test"+i+" 입니다~~");
+            communityBoardRepository.save(test);
+        }
     }
 }

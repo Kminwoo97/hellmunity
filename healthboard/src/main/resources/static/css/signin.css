@@ -1,0 +1,76 @@
+/* .main-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 5em 0;
+  background: #fff;
+}
+
+.main-block .sidebar {
+  flex-grow: 1;
+  background-color: black;
+}
+
+form {
+  width: 50%;
+  padding: 20px;
+  border: 1px solid #8ebf42;
+  border-radius: 10px;
+}
+
+form > .account-details{
+  margin: 0 auto;
+}
+
+fieldset {
+  border: none;
+  border-top: 1px solid #8ebf42;
+}
+
+.account-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  justify-content: flex-end;
+}
+
+.account-details>div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+
+
+.account-details>div,
+input,label {
+  width: 100%;
+}
+
+label {
+  padding: 0 5px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+input {
+  padding: 5px;
+  margin-top: 5px;
+  vertical-align: middle;
+} */
+
+
+.loginform {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loginform div {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 10px 0;
+}
+

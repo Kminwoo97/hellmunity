@@ -24,17 +24,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment edit(CommentDto commentDto) {
-        return null;
+    public Comment edit(Long commentId, String editContent) {
+        Comment comment = commentRepository.findById(commentId).get();
+        comment.setCommentContent(editContent);
+        Comment saveComment = commentRepository.save(comment);
+        return saveComment;
     }
 
     @Override
-    public Comment delete(CommentDto commentDto) {
-        return null;
+    public void delete(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).get();
+        commentRepository.delete(comment);
     }
 
     @Override
     public List<Comment> findAll() {
         return null;
     }
+
 }

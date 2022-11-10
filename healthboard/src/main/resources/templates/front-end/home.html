@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/default.css}">
+  <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <title>Hellmunity</title>
+
+  <!-- Jquery Import  -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript">
+    window.onload = function() {
+      var httpRequest;
+      // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
+      document.getElementById("logout").addEventListener('click', () => {
+        httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', '/logout', false); //false 옵션은 비동기 처리 X
+        httpRequest.send();
+        alert("로그아웃 처리 완료");
+        window.location.href="/";
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <div class="page">
+    <!-- header -->
+    <header class="header">
+      <img th:src="@{/image/dumbel.png}" alt="">
+      <a th:href="@{/}"><h1>Hellmunity</h1></a>
+    </header>
+
+    <!-- 로그인, 로그아웃 -->
+    <ul class="login">
+      <a th:if="${session.memberNo}" href="#">
+        <li class="login-item">마이페이지</li>
+      </a>
+      <a th:unless="${session.memberNo}" th:href="@{/members/add}">
+        <li class="login-item">회원가입</li>
+      </a>
+
+      <a th:if="${session.memberNo}" id="logout" href="#">
+        <li class="login-item">로그아웃</li>
+      </a>
+      </a>
+      <a th:unless="${session.memberNo}" th:href="@{/login}">
+        <li class="login-item">로그인</li>
+      </a>
+    </ul>
+
+    <!-- menu -->
+    <ul class="menu">
+      <a th:href="@{/}"><li class="menu-item">홈</li></a>
+      <a th:href="@{#}"><li class="menu-item">모임</li></a>
+      <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
+    </ul>
+
+    <!-- main content -->
+    <div class="main-container">
+      <figure class="main-container-image" style="background-image: url(/image/main_logo.jpg);">
+        <img th:src="@{/image/main_logo.jpg}" alt="">
+      </figure>
+      <p>Let's together</p>
+    </div>
+
+
+    <!-- sub content -->
+    <div class="sub-container">
+      <h3>부위 별 운동 가이드</h3>
+      <ul class="sub-container-list">
+        <li class="sub-container-item">
+          <img th:src="@{/image/bench_press.jpg}" alt="">
+          <div class="item-desc">가슴</div>
+        </li>
+        <li class="sub-container-item">
+          <img th:src="@{/image/squart.jpg}" alt="">
+          <div class="item-desc">하체</div>
+        </li>
+        <li class="sub-container-item">
+          <img th:src="@{/image/shoulder_press.jpg}" alt="">
+          <div class="item-desc">어깨</div>
+        </li>
+        <li class="sub-container-item">
+          <img th:src="@{/image/pullup.jpg}" alt="">
+          <div class="item-desc">등</div>
+        </li>
+        <li class="sub-container-item">
+          <img th:src="@{/image/arm.jpg}" alt="">
+          <div class="item-desc">팔</div>
+        </li>
+      </ul>
+    </div>
+
+
+    <!-- footer -->
+
+    <footer class="footer">
+      <hr>
+      <div>
+        <ul>
+          <li>이메일 : kmw3841@skuniv.ac.kr</li>
+          <li>주소 : 서울 성북구 서경대학교</li>
+          <li>연락처 : 010-0000-0000</li>
+          <li>copry right @ mwkim</li>
+        </ul>
+      </div>
+    </footer>
+
+  </div>
+</body>
+
+</html>

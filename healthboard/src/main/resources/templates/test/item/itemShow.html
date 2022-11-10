@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table th:object="${board}">
+    <tr>
+        <td>글 제목 :</td>
+        <td th:text="*{communityBoardTitle}">board 제목</td>
+    </tr>
+
+    <tr>
+        <td>글 내용 :</td>
+        <td th:text="*{communityBoardDetail}">board 번호</td>
+    </tr>
+    <tr>
+        <td>작성자</td>
+        <td th:text="*{writer.memberId}">board 작성자</td>
+    </tr>
+</table>
+<button th:if="${board.writer.memberNo.equals(session.memberNo)}"
+        th:onclick="|location.href='@{/item/{boardId}/edit(boardId=${board.communityBoardId})}'|">수정
+</button>
+
+<form th:action="@{/item/{id}/delete(id=${board.communityBoardId})}" method="POST">
+    <button th:if="${board.writer.memberNo.equals(session.memberNo)}">삭제</button>
+</form>
+
+<button th:onclick="|location.href='@{/items}'|" type="button">목록</button>
+
+
+<form th:action="@{/item/{id}/comment(id=${board.communityBoardId})}"
+      th:object="${comment}" method="POST">
+    <div id="form-commentInfo">
+
+        <div>댓글</div>
+        <input id="comment-input" placeholder="댓글을 입력해 주세요." th:field="*{content}" th:errorclass="field-error">
+        <div class="field-error" th:errors="*{content}" />
+
+        <button type="submit" id="submit" >등록</button>
+    </div>
+</form>
+
+<div id=comments>
+    <table>
+        <tr th:each="comment : ${comments}">
+            <td th:text="${comment.commentContent}">댓글 내용</td>
+            <td th:text="${comment.writer.memberName}">작성자 </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+
+<script th:inline="javascript">
+    function registerCommnets()
+</script>
+</html>

@@ -1,6 +1,10 @@
 package school.healthboard.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,24 +36,36 @@ public class CommunityBoardController {
     private final CommunityBoardService communityBoardService;
     private final MemberService memberService;
 
-    //1. 게시글 목록으로 이동
-    @GetMapping("/items")
-    public String boardAll(Model model, HttpServletRequest request) {
-        List<CommunityBoard> boardList = communityBoardService.findAll();
-        model.addAttribute("boardList", boardList);
+    //1-1 게시글 목록으로 이동 - 페이징 처리 X
+//    @GetMapping("/questions")
+//    public String boardAll(Model model, HttpServletRequest request) {
+//        List<CommunityBoard> boardList = communityBoardService.findAll();
+//        model.addAttribute("boardList", boardList);
+//
+//        return "/front-end/qna";
+//    }
 
-        return "/item/itemList";
+    //1-2 게시글 목록으로 이동 - 페이징 처리 O
+    @GetMapping("/questions")
+    public String boardAll(Model model,
+                           @PageableDefault(page = 0, size = 3, sort = "communityBoardId", direction = Sort.Direction.DESC) Pageable pageable,
+                           String searchTitle) {
+        Page<CommunityBoard> boardList = communityBoardService.findAllPage(pageable);
+        model.addAttribute("boardList", boardList);
+        model.addAttribute("maxPage", 10);
+
+        return "/front-end/qna";
     }
 
     //2. 게시글 등록으로 이동
-    @GetMapping("/item/add")
+    @GetMapping("/question/add")
     public String boardSaveForm(@ModelAttribute("communityBoard") CommunityBoard communityBoard, Model model) {
         model.addAttribute("member", communityBoard.getWriter());
-        return "/item/itemForm";
+        return "/front-end/qna-register";
     }
 
     //3. 게시글 등록 - 현재 로그인 사용자 id값 가져오기
-    @PostMapping("/item/add")
+    @PostMapping("/question/add")
     public String boardSave(@ModelAttribute("communityBoard") CommunityBoard communityBoard, HttpServletRequest request) {
         //세션에 저장된 회원 정보 가져오기
         HttpSession session = request.getSession();
@@ -61,18 +77,18 @@ public class CommunityBoardController {
 
         communityBoardService.save(communityBoard);
 
-        return "redirect:/items";
+        return "redirect:/questions";
     }
 
     //4. 특정 게시글 상세보기
-    @GetMapping("/item/{boardId}")
+    @GetMapping("/question/{boardId}")
     public String boardFind(@PathVariable Long boardId, @ModelAttribute("comment") CommentDto commentDto,
                             Model model, HttpServletRequest request){
 
         Optional<CommunityBoard> findBoard = communityBoardService.findOne(boardId);
         if(findBoard.isEmpty()){
             //에러 메시지 출력하고
-            return "redirect:/items";
+            return "redirect:/questions";
         }
         CommunityBoard communityBoard = findBoard.get();
         List<Comment> commentList = communityBoard.getCommentList();
@@ -81,11 +97,11 @@ public class CommunityBoardController {
         model.addAttribute("board", communityBoard);
         model.addAttribute("comments", commentList);
 
-        return "/item/itemShow";
+        return "/front-end/qnaDetail";
     }
 
     //5. 게시글 수정 - 이동
-    @GetMapping("/item/{boardId}/edit")
+    @GetMapping("/question/{boardId}/edit")
     public String boardEditPage(@PathVariable Long boardId, @ModelAttribute("communityBoard") CommunityBoard communityBoard,
                                 HttpServletRequest request, Model model) {
         //게시글을 작성한 사용자 가저오기
@@ -98,27 +114,28 @@ public class CommunityBoardController {
 
         if (!memberNo.equals(writer.getMemberNo())) {
             System.out.println("작성자가 아닙니다.");
-            return "redirect:/items";
+            return "redirect:/questions";
         }
 
 
         CommunityBoard board = findBoard.get();
         communityBoard.setCommunityBoardTitle(board.getCommunityBoardTitle());
         communityBoard.setCommunityBoardDetail(board.getCommunityBoardDetail());
-        return "/item/itemUpdateForm";
+//        return "/items/itemUpdateForm";
+        return "/questions/수정폼html";
     }
 
     //5. 게시글 수정 - 수정
-    @PostMapping("/item/{boardId}/edit")
+    @PostMapping("/question/{boardId}/edit")
     public String boardEdit(@PathVariable Long boardId, @ModelAttribute("communityBoard") CommunityBoard communityBoard){
         communityBoardService.editOne(boardId,communityBoard);
-        return "redirect:/items";
+        return "redirect:/questions";
     }
 
     //6. 게시글 삭제
-    @PostMapping("/item/{boardId}/delete")
+    @PostMapping("/question/{boardId}/delete")
     public String boardRemove(@PathVariable Long boardId, HttpServletRequest request){
         communityBoardService.delete(boardId);
-        return "redirect:/items";
+        return "redirect:/questions";
     }
 }

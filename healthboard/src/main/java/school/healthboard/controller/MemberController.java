@@ -36,7 +36,7 @@ public class MemberController {
      */
     @GetMapping("/members/add")
     public String addForm(@ModelAttribute("member") MemberSignupDto memberSignupDto) {
-        return "/members/addMemberForm";
+        return "/front-end/signup";
     }
 
     /**
@@ -48,7 +48,7 @@ public class MemberController {
         //회원가입 validation 걸린 경우 회원가입 페이지로 redirect
         //@ModelAttribute 를 사용해서 자동으로 model.addAttriubte()가 되어서 값 유지 가능
         if(bindingResult.hasErrors()) {
-            return "members/addMemberForm";
+            return "/front-end/signup";
         }
 
         //회원가입 validation 통과 후, 회원가입 실행

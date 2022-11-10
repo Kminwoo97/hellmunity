@@ -1,0 +1,70 @@
+
+
+/* 테이블 디자인 */
+
+table {
+  border: 1px #a39485 solid;
+  font-size: .9em;
+  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+  width: 60%;
+  border-radius: 5px;
+  margin: 0 auto;
+}
+
+
+thead {
+  font-weight: bold;
+  color: #fff;
+  background: #73685d;
+}
+th {
+  text-align: left;
+}
+  
+td, th {
+  padding: 1em .5em;
+  vertical-align: middle;
+}
+  
+td {
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  background: #fff;
+}
+
+
+
+
+/* 버튼*/
+
+.button-qna-register {
+	/* box-shadow:inset 0px 1px 0px 0px #a6827e; */
+	background:linear-gradient(to bottom, #7d5d3b 5%, #634b30 100%);
+	background-color:#7d5d3b;
+	border-radius:3px;
+	border:1px solid #dbaf88;
+	display:inline-block;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	padding:15px 25px;
+	text-shadow:0px 1px 0px #4d3534;
+}
+.button-qna-register:hover {
+	background:linear-gradient(to bottom, #634b30 5%, #7d5d3b 100%);
+	background-color:#634b30;
+}
+.button-qna-register:active {
+	position:relative;
+	top:1px; /*버튼 클릭 시, top에서부터 1px만큼 움직임*/
+}
+
+.button-qna-register{
+  position: relative;
+  top: 10px;
+  left: 20%;
+}
+
+
+
+
+/* 긁어오기 */

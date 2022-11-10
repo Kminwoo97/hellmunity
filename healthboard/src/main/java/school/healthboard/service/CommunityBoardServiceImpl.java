@@ -1,6 +1,8 @@
 package school.healthboard.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import school.healthboard.entity.CommunityBoard;
 import school.healthboard.repository.CommunityBoardRepository;
@@ -19,6 +21,14 @@ public class CommunityBoardServiceImpl implements CommunityBoardService {
         return communityBoardRepository.save(communityBoard);
     }
 
+    //findAll - 페이징 처리 O
+    @Override
+    public Page<CommunityBoard> findAllPage(Pageable pageable) {
+        Page<CommunityBoard> all = communityBoardRepository.findAll(pageable);
+        return all;
+    }
+
+    //findAll - 페이징 처리 X
     @Override
     public List<CommunityBoard> findAll() {
         return communityBoardRepository.findAll();

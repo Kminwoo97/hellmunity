@@ -28,10 +28,8 @@ public class LoginController {
     //로그인 페이지로 이동
     @GetMapping("/login")
     public String loginForm(@ModelAttribute("loginForm") MemberSigninDto memberSigninDto) {
-        return "login/loginForm";
+        return "/front-end/signin";
     }
-
-
 
     //4. filter를 적용한 로그인
     @PostMapping("/login")
@@ -40,7 +38,7 @@ public class LoginController {
 
         //유효하지 않은 입력 폼 입력 시 로그인 폼으로 이동
         if (bindingResult.hasErrors()) {
-            return "login/loginForm";
+            return "/front-end/signin";
         }
 
         Optional<Member> loginMember = (Optional<Member>) loginService.login(form.getLoginId(), form.getPassword());
@@ -49,7 +47,7 @@ public class LoginController {
         if (loginMember.isEmpty()) {
             //reject()는 글로벌 오류이다.
             bindingResult.reject("loginfail", "아이디 또는 비밀번호가 맞지 않습니다.");
-            return "login/loginForm";
+            return "/front-end/signin";
         }
 
 
@@ -73,7 +71,7 @@ public class LoginController {
 
 
     //3. HttpSession 을 이요한 로그아웃
-    @PostMapping("/logout")
+    @PostMapping("/logout") //원래는 POST인데 GET으로 임시방편으로 해보자
     public String logoutV3(HttpServletRequest request) {
         //세션을 없애는 것이 목적이기 때문에 false 옵션을 주고 조회해 온다.
         HttpSession session = request.getSession(false);

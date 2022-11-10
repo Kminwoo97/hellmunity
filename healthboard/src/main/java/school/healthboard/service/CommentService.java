@@ -13,7 +13,7 @@ public interface CommentService {
      * 4. 댓글 조회
      */
     Comment save(CommentDto commentDto);
-    Comment edit(CommentDto commentDto);
-    Comment delete(CommentDto commentDto);
+    Comment edit(Long commentId, String edtiContent);
+    void delete(Long commentId);
     List<Comment> findAll();
 }

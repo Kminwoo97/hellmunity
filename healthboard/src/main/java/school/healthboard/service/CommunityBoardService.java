@@ -1,5 +1,7 @@
 package school.healthboard.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import school.healthboard.entity.CommunityBoard;
 
 import java.util.List;
@@ -14,6 +16,7 @@ public interface CommunityBoardService {
      * 게시글 삭제하기
      */
     CommunityBoard save(CommunityBoard communityBoard);
+    Page<CommunityBoard> findAllPage(Pageable pageable);
     List<CommunityBoard> findAll();
     Optional<CommunityBoard> findOne(Long boardId);
     CommunityBoard editOne(Long boardId, CommunityBoard communityBoard);

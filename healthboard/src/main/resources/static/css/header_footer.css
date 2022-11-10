@@ -1,0 +1,109 @@
+a{
+  text-decoration: none;
+  color: #555;
+}
+
+/* header */
+.header{
+  display: flex;
+  padding : 0 1rem;
+  height: 87px;
+  align-items: center;
+}
+
+
+.header img{
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+}
+
+ul{
+  list-style: none;
+  padding: 0;
+}
+
+/* 로그인, 로그아웃 */
+.login{
+  display: flex;
+  background-color: wheat;
+  justify-content: flex-end;
+}
+
+.login a{
+  padding: 1em 2em;
+  width: 15%;
+  text-align: center;
+}
+
+.login a:hover{
+  background-color: crimson;
+  color: white;
+}
+
+/* .login-item{
+  padding: 1em 2em;
+  width: 15%;
+  text-align: center;
+} */
+
+/* .login-item:hover{
+  background-color: crimson;
+  color: white;
+} */
+
+
+/* 메뉴 */
+.menu{
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.menu a{
+  background-color: aliceblue;
+  padding: 1em 2em;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  width: 33.333%; 
+  transition: 0.5s;
+  text-decoration: none;
+  color: #555;
+}
+
+.menu a:hover{
+  background-color: crimson;
+  color: white;
+  width: 40%;
+}
+
+
+
+/* footer */
+
+
+.footer{
+  margin: 20px 150px;
+}
+.footer li{
+  font-size: 20px;
+}
+
+
+
+/* footer 하단 고정? */
+html {
+
+  position: relative;
+
+  min-height: 100%;
+
+  margin: 0;
+}
+
+body {
+
+  min-height: 100%;
+
+}
