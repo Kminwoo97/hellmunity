@@ -7,10 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import school.healthboard.entity.Comment;
 import school.healthboard.entity.CommunityBoard;
 import school.healthboard.entity.Member;
@@ -48,13 +45,31 @@ public class CommunityBoardController {
     //1-2 게시글 목록으로 이동 - 페이징 처리 O
     @GetMapping("/questions")
     public String boardAll(Model model,
-                           @PageableDefault(page = 0, size = 3, sort = "communityBoardId", direction = Sort.Direction.DESC) Pageable pageable,
+                           @PageableDefault(page = 0, size = 5, sort = "communityBoardId", direction = Sort.Direction.DESC) Pageable pageable,
                            String searchTitle) {
         Page<CommunityBoard> boardList = communityBoardService.findAllPage(pageable);
         model.addAttribute("boardList", boardList);
         model.addAttribute("maxPage", 10);
 
+//        Page<CommunityBoard> boardList = communityBoardService.searchTitle(communityBoardTitle, pageable);
+//        model.addAttribute("boardList", boardList);
+//        model.addAttribute("maxPage", 10);
+
+
         return "/front-end/qna";
+    }
+
+    //1-3
+    @GetMapping("/questions/search")
+    public String boardSearch(@RequestParam("communityBoardTitle") String communityBoardTitle,
+                           @PageableDefault(page = 0, size = 5, sort = "communityBoardId", direction = Sort.Direction.DESC) Pageable pageable,
+                              Model model,
+                           String searchTitle) {
+        Page<CommunityBoard> boardList = communityBoardService.searchTitle(communityBoardTitle, pageable);
+        model.addAttribute("boardList", boardList);
+        model.addAttribute("maxPage", 10);
+        model.addAttribute("communityBoardTitle", communityBoardTitle);
+        return "/front-end/qna-search";
     }
 
     //2. 게시글 등록으로 이동
@@ -102,7 +117,7 @@ public class CommunityBoardController {
 
     //5. 게시글 수정 - 이동
     @GetMapping("/question/{boardId}/edit")
-    public String boardEditPage(@PathVariable Long boardId, @ModelAttribute("communityBoard") CommunityBoard communityBoard,
+    public String boardEditPage(@PathVariable Long boardId,
                                 HttpServletRequest request, Model model) {
         //게시글을 작성한 사용자 가저오기
         Optional<CommunityBoard> findBoard = communityBoardService.findOne(boardId);
@@ -119,23 +134,24 @@ public class CommunityBoardController {
 
 
         CommunityBoard board = findBoard.get();
-        communityBoard.setCommunityBoardTitle(board.getCommunityBoardTitle());
-        communityBoard.setCommunityBoardDetail(board.getCommunityBoardDetail());
+        model.addAttribute("board", board);
 //        return "/items/itemUpdateForm";
-        return "/questions/수정폼html";
+        return "/front-end/qna-edit";
     }
 
     //5. 게시글 수정 - 수정
     @PostMapping("/question/{boardId}/edit")
     public String boardEdit(@PathVariable Long boardId, @ModelAttribute("communityBoard") CommunityBoard communityBoard){
         communityBoardService.editOne(boardId,communityBoard);
-        return "redirect:/questions";
+        System.out.println("여기 ㅅ호출초후출후룬ㅇ");
+        return "redirect:/question/"+boardId;
     }
 
     //6. 게시글 삭제
     @PostMapping("/question/{boardId}/delete")
     public String boardRemove(@PathVariable Long boardId, HttpServletRequest request){
         communityBoardService.delete(boardId);
+
         return "redirect:/questions";
     }
 }

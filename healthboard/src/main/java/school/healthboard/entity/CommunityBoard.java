@@ -20,14 +20,14 @@ public class CommunityBoard extends BaseTimeEntity{
     private String communityBoardTitle;
     private String communityBoardDetail;
 
-    private String communityBoardImage;
+//    private String communityBoardImage;
 
 
     @ManyToOne
     @JoinColumn(name = "memberNo")
     private Member writer;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
 

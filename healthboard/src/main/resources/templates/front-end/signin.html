@@ -2,6 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 
 <head>
+  <!-- Bootstrap core CSS -->
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +12,21 @@
   <link rel="stylesheet" th:href="@{/css/header_footer.css}">
   <link rel="stylesheet" th:href="@{/css/signin.css}">
   <title>Hellmunity</title>
+
+  <script type="text/javascript">
+
+    window.onload = function() {
+      var httpRequest;
+      // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
+      document.getElementById("logout").addEventListener('click', () => {
+        httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', '/logout', false); //false 옵션은 비동기 처리 X
+        httpRequest.send();
+        alert("로그아웃 처리 완료");
+        window.location.href="/";
+      });
+    }
+  </script>
 </head>
 
 <body>
@@ -21,10 +39,18 @@
 
     <!-- 로그인, 로그아웃 -->
     <ul class="login">
-      <a th:href="@{/members/add}">
+      <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
+        <li class="login-item">마이페이지</li>
+      </a>
+      <a th:unless="${session.memberNo}" th:href="@{/members/add}">
         <li class="login-item">회원가입</li>
       </a>
-      <a th:href="@{/login}">
+
+      <a th:if="${session.memberNo}" id="logout" href="#">
+        <li class="login-item">로그아웃</li>
+      </a>
+      </a>
+      <a th:unless="${session.memberNo}" th:href="@{/login}">
         <li class="login-item">로그인</li>
       </a>
     </ul>
@@ -32,7 +58,7 @@
     <!-- menu -->
     <ul class="menu">
       <a th:href="@{/}"><li class="menu-item">홈</li></a>
-      <a th:href="@{#}"><li class="menu-item">모임</li></a>
+      <a th:href="@{/moim}"><li class="menu-item">모임</li></a>
       <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
     </ul>
 
@@ -74,18 +100,48 @@
 
 
   <!-- footer -->
+  <div id='wrap'>
+    <footer class="py-5 bg-dark mt-auto">
+      <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
+    </footer>
+  </div>
 
-  <footer class="footer">
-    <hr>
-    <div>
-      <ul>
-        <li>이메일 : kmw3841@skuniv.ac.kr</li>
-        <li>주소 : 서울 성북구 서경대학교</li>
-        <li>연락처 : 010-0000-0000</li>
-        <li>copry right @ mwkim</li>
-      </ul>
-    </div>
-  </footer>
+  <style>
+    #wrap {
+      min-height: 20vh;
+      position: relative;
+      width: 100%;
+    }
+
+    footer {
+      width: 100%;
+      height: 110px;
+      /* 내용물에 따라 알맞는 값 설정 */
+      bottom: 0px;
+      position: absolute;
+    }
+
+    footer{ position:fixed;
+      left:0px;
+      bottom:0px;
+      height:100px;
+      width:100%;
+      background:grey;
+      color: white;
+      text-align: center}
+  </style>
+  <!-- footer -->
+<!--  <footer class="footer">-->
+<!--    <hr>-->
+<!--    <div>-->
+<!--      <ul>-->
+<!--        <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+<!--        <li>주소 : 서울 성북구 서경대학교</li>-->
+<!--        <li>연락처 : 010-0000-0000</li>-->
+<!--        <li>copry right @ mwkim</li>-->
+<!--      </ul>-->
+<!--    </div>-->
+<!--  </footer>-->
 
   </div>
 </body>

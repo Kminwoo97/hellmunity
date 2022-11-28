@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import school.healthboard.entity.CommunityBoard;
+import school.healthboard.entity.Member;
 import school.healthboard.repository.CommunityBoardRepository;
+import school.healthboard.repository.MemberRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class CommunityBoardServiceImpl implements CommunityBoardService {
 
     private final CommunityBoardRepository communityBoardRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public CommunityBoard save(CommunityBoard communityBoard) {
@@ -55,5 +58,18 @@ public class CommunityBoardServiceImpl implements CommunityBoardService {
     @Override
     public void delete(Long boardId) {
         communityBoardRepository.deleteById(boardId);
+    }
+
+    @Override
+    public Page<CommunityBoard> findMyPage(Pageable pageable, Long memberNo) {
+
+        Member findMember = memberRepository.findByMemberNo(memberNo);
+
+        return communityBoardRepository.findCommunityBoardByWriter(findMember, pageable);
+    }
+
+    @Override
+    public Page<CommunityBoard> searchTitle(String communityBoardTitle, Pageable pageable) {
+        return communityBoardRepository.findCommunityBoardByCommunityBoardTitleContaining(communityBoardTitle,pageable);
     }
 }

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/default.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="stylesheet" th:href="@{/css/qna.css}">
+    <title>Hellmunity</title>
+
+
+    <script type="text/javascript">
+        function chatRoomExit(roomId) {
+            if (!confirm("채팅방을 나가겠습니까?")) {
+                return false;
+            }
+
+            //form형식으로 삭제 api 요청하기
+            var f = document.createElement('form');
+            f.setAttribute('method', 'post');
+            f.setAttribute('action', '/chat/room/' + roomId + '/exit');
+            document.body.appendChild(f);
+            f.submit();
+        }
+    </script>
+</head>
+
+<body>
+<div class="page">
+    <!-- header -->
+    <header class="header">
+        <img th:src="@{/image/dumbel.png}" alt="">
+        <a th:href="@{/}"><h1>Hellmunity</h1></a>
+    </header>
+
+    <!-- 로그인, 로그아웃 -->
+    <ul class="login">
+        <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
+            <li class="login-item">마이페이지</li>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/members/add}">
+            <li class="login-item">회원가입</li>
+        </a>
+
+        <a th:if="${session.memberNo}" id="logout" href="#">
+            <li class="login-item">로그아웃</li>
+        </a>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/login}">
+            <li class="login-item">로그인</li>
+        </a>
+    </ul>
+
+    <!-- menu -->
+    <ul class="menu">
+        <a th:href="@{/}"><li class="menu-item">홈</li></a>
+        <a th:href="@{/moim}"><li class="menu-item">모임</li></a>
+        <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
+    </ul>
+
+    <div class="main-content">
+
+        <div class="container">
+            <div class="text-center py-3">
+                <img th:src="@{/image/user.png}" alt class="ui-w-100 rounded-circle">
+
+                <div class="col-md-8 col-lg-6 col-xl-5 p-0 mx-auto">
+                    <h4 class="font-weight-bold my-4">[[${member.memberName}]]의 마이페이지</h4>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs tabs-alt justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link py-4" th:href="@{/member/mypage}">내 정보</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-4" th:href="@{/member/mypage/qnaList}">Q&A</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-4" th:href="@{/member/mypage/moimList}">모임 글</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-4 active" th:href="@{/chat/rooms}">채팅방</a>
+            </li>
+        </ul>
+
+
+        <!-- Page Content -->
+        <div class="container">
+            <div class="row">
+                <!-- /.col-lg-3 -->
+
+                <div class="col-lg-9 mx-auto mt-5">
+
+                    <!-- moim 목록 -->
+                    <div id="board-list">
+                        <div class="container">
+                            <table class="board-table">
+                                <thead>
+                                <tr>
+                                    <th scope="col" colspan="2" class="th-num">제목</th>
+                                    <th scope="col" class="th-title">채팅상대</th>
+                                    <th scope="col" class="th-date">나가기</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="chatRoom : ${chatRoomList}">
+                                    <td th:colspan="2">
+                                        <a href="#"
+                                           th:text="${chatRoom.roomName}"
+                                           th:href="@{/chat/room/{roomId}(roomId=${chatRoom.roomId})}">제목
+                                        </a>
+                                    </td>
+                                    <td th:if="${chatRoom.roomHost} == ${member}" th:text="${member.memberName}">채팅
+                                        상대방
+                                    </td>
+                                    <td th:if="${chatRoom.roomHost} != ${member}"
+                                        th:text="${chatRoom.roomGuest.memberName}">채팅 상대방
+                                    </td>
+                                    <td>
+                                        <button th:roomId="${chatRoom.roomId}"
+                                                th:onclick="chatRoomExit(this.getAttribute('roomId'))">채팅방 나가기
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <!--                    <div class="page_wrap mb-5"-->
+                    <!--                         th:with="start=${ (chatRoomList.number/maxPage)*maxPage + 1},-->
+                    <!--             end=(${(chatRoomList.totalPages == 0) ? 1 : (start + (maxPage - 1) < chatRoomList.totalPages ? start + (maxPage - 1) : chatRoomList.totalPages)})">-->
+                    <!--                        <div class="page_nation">-->
+                    <!--                            &lt;!&ndash;첫 페이지로 이동&ndash;&gt;-->
+                    <!--                            <a th:if="${start > 1}" th:href="@{/chat/rooms?(page=0)}" th:text="'<<'"></a>-->
+
+                    <!--                            &lt;!&ndash;이전 페이지로 이동&ndash;&gt;-->
+                    <!--                            <a th:if="${start > 1}" th:href="@{/chat/rooms?(page=${start - maxPage - 1})}" th:text="'<'"></a>-->
+
+                    <!--                            &lt;!&ndash;페이지 표기&ndash;&gt;-->
+                    <!--                            <a th:each="page: ${#numbers.sequence(start, end)}" th:href="@{/chat/rooms?(page=${page-1})}"-->
+                    <!--                               th:text="${page}"-->
+                    <!--                               th:classappend="${page-1 == chatRoomList.number} ? 'active'"></a>-->
+
+                    <!--                            &lt;!&ndash;다음 장으로 이동 &ndash;&gt;-->
+                    <!--                            <a th:if="${end < chatRoomList.totalPages}" th:href="@{/chat/rooms?(page=${start + maxPage - 1})}"-->
+                    <!--                               th:text="'>'"></a>-->
+
+                    <!--                            &lt;!&ndash;마지막 페이지로 이동&ndash;&gt;-->
+                    <!--                            <a th:if="${end < chatRoomList.totalPages}" th:href="@{/chat/rooms?(page=${chatRoomList.totalPages-1})}"-->
+                    <!--                               th:text="'>>'"></a>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container -->
+        </div>
+    </div>
+
+</div>
+
+<!--<footer class="footer">-->
+<!--    <hr>-->
+<!--    <div>-->
+<!--        <ul>-->
+<!--            <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+<!--            <li>주소 : 서울 성북구 서경대학교</li>-->
+<!--            <li>연락처 : 010-0000-0000</li>-->
+<!--            <li>copry right @ mwkim</li>-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</footer>-->
+
+</div>
+
+<!-- footer -->
+<div id='wrap'>
+    <footer class="py-5 bg-dark mt-auto">
+        <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
+    </footer>
+</div>
+
+<style>
+    #wrap {
+        min-height: 20vh;
+        position: relative;
+        width: 100%;
+    }
+
+    footer {
+        width: 100%;
+        height: 110px;
+        /* 내용물에 따라 알맞는 값 설정 */
+        bottom: 0px;
+        position: absolute;
+    }
+
+    footer {
+        position: fixed;
+        left: 0px;
+        bottom: 0px;
+        height: 100px;
+        width: 100%;
+        background: grey;
+        color: white;
+        text-align: center
+    }
+</style>
+
+</body>
+
+</html>

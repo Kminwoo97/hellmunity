@@ -2,6 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 
 <head>
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +14,35 @@
     <!-- Jquery Import  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript">
-        //1. 삭제 버튼 클릭
+
+        window.onload = function() {
+            var httpRequest;
+            // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
+            document.getElementById("logout").addEventListener('click', () => {
+                httpRequest = new XMLHttpRequest();
+                httpRequest.open('POST', '/logout', false); //false 옵션은 비동기 처리 X
+                httpRequest.send();
+                alert("로그아웃 처리 완료");
+                window.location.href="/";
+            });
+        }
+
+        //게시물 삭제하기 버튼 클릭
+        function boardDel(boardId) {
+            if (!confirm("게시물을 삭제하시겠습니까?")) {
+                return false;
+            }
+
+            //form형식으로 삭제 api 요청하기
+            var f = document.createElement('form');
+            f.setAttribute('method', 'post');
+            f.setAttribute('action', '/question/' + boardId + '/delete');
+            document.body.appendChild(f);
+            f.submit();
+        }
+
+
+        //1. 댓글 삭제 버튼 클릭
         function commentDel(boardId, commentId) {
             if (!confirm("댓글을 삭제하시겠습니까?")) {
                 return false;
@@ -19,38 +50,43 @@
             //댓글 삭제 요청
             $.ajax({
                 type: "POST",
-                url: "/question/" + boardId + "/comment/" + commentId +"/delete",
+                url: "/question/" + boardId + "/comment/" + commentId + "/delete",
                 contentType: "application/x-www-form-urlencoded;charset=UTF-8"
-            }).done(function (fragment){
+            }).done(function (fragment) {
                 $("#commentList").replaceWith(fragment);
+                location.reload();
             });
         }
-        //2-1 수정 버튼 클릭시
-        function commentEdit(commnetId, content, boardId){
-            $('#comment'+commnetId).html(
-                "<textarea id='edit_content"+commnetId+"'>"+content+"</textarea>"
-                +"<style>#edit_content"+commnetId+"{width:740px; height:80px; resize:none;} </style>"
+
+        //2-1 댓글 수정 버튼 클릭시
+        function commentEdit(commnetId, content, boardId) {
+            $('#comment' + commnetId).removeAttr("readonly");
+
+            $('#comment' + commnetId).html(
+                content
             );
 
-            $('#commentButton'+commnetId).html(
-                "<button onclick='commentEditSave("+commnetId+","+boardId+")' id='btnEdit'>완료</button> "
+            $('#commentButton' + commnetId).html(
+                "<button  class='btn btn-primary'onclick='commentEditSave(" + commnetId + "," + boardId + ")' id='btnEdit'>완료</button> "
                 // +"<button onclick='commentEditCancel("+commnetId+","+boardId+")' id='btnCancel'+ commentId>취소</a>"
-                +"<button onclick=location.href='/question/"+ boardId+"' id='btnCancel'>취소</button>"
+                + "<button class='btn btn-primary' onclick=location.href='/question/" + boardId + "' id='btnCancel'>취소</button>"
             );
         }
+
         //2-2 수정 버튼 클릭 후, 저장하기 버튼 누르기
-        function commentEditSave(commentId, boardId){
-            var content = $("#edit_content"+commentId).val();
+        function commentEditSave(commentId, boardId) {
+            var content = $("#comment" + commentId).val();
             //댓글 수정 요청
             $.ajax({
                 type: "POST",
-                url: "/question/" + boardId + "/comment/" + commentId +"/edit",
-                data : {"comment" : content},
+                url: "/question/" + boardId + "/comment/" + commentId + "/edit",
+                data: {"comment": content},
                 contentType: "application/x-www-form-urlencoded;charset=UTF-8"
-            }).done(function (fragment){
+            }).done(function (fragment) {
                 $("#commentList").replaceWith(fragment);
             });
         }
+
         //2-3 수정 버튼 클릭 후, 취소 버튼 누르기
         // function commentEditCancel(commentId, content){
         //     console.log("취소 버튼 클릭");
@@ -72,7 +108,7 @@
 
     <!-- 로그인, 로그아웃 -->
     <ul class="login">
-        <a th:if="${session.memberNo}" href="#">
+        <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
             <li class="login-item">마이페이지</li>
         </a>
         <a th:unless="${session.memberNo}" th:href="@{/members/add}">
@@ -88,85 +124,182 @@
         </a>
     </ul>
 
+    <!-- menu -->
+    <ul class="menu">
+        <a th:href="@{/}"><li class="menu-item">홈</li></a>
+        <a th:href="@{/moim}"><li class="menu-item">모임</li></a>
+        <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
+    </ul>
+
     <!-- Q&A 상세보기 폼-->
-    <div class="main-block">
-        <table class="board_view" th:object="${board}">
-            <caption>상세보기</caption>
-            <colgroup>
-                <col width="15%">
-                <col width="35%">
-                <col width="15%">
-                <col width="*">
-            </colgroup>
+    <!--    <div class="main-block">-->
 
-            <tbody>
-            <tr>
-                <th>제목</th>
-                <td th:text="*{communityBoardTitle}"></td>
-            </tr>
-            <tr>
-                <th>작성자</th>
-                <td th:text="*{writer.memberName}"></td>
-            </tr>
-            <tr>
-                <th>내용</th>
-                <td th:text="*{communityBoardDetail}" colspan="3"></td>
-            </tr>
-            </tbody>
-        </table>
-        <a th:href="@{/questions}" id="list" class="btn">목록으로</a>
-        <a th:if="${board.writer.memberNo.equals(session.memberNo)}" href="#this" id="modify" class="btn">수정하기</a>
-        <a th:if="${board.writer.memberNo.equals(session.memberNo)}" href="#this" id="modify" class="btn">삭제하기</a>
+    <!-- 댓글 입력 폼 -->
+    <!--        <div>-->
+    <!--            <form th:action="@{/question/{boardId}/comment(boardId=${board.communityBoardId})}" method="POST"-->
+    <!--                  th:object="${comment}">-->
+    <!--                <div class="field-error" th:errors="*{content}"></div>-->
+    <!--                <div>-->
+    <!--                    <textarea name="content" th:field="*{content}" th:errorclass="field-error"></textarea>-->
+    <!--                    <button>댓글 작성</button>-->
+    <!--                </div>-->
+    <!--            </form>-->
+    <!--        </div>-->
 
-        <!--- 댓글 입력 폼 -->
-        <div>
-            <form th:action="@{/question/{boardId}/comment(boardId=${board.communityBoardId})}" method="POST"
-                  th:object="${comment}">
-                <div class="field-error" th:errors="*{content}"></div>
-                <div>
-                    <textarea name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
-                    <button>댓글 작성</button>
+    <!--- 댓글 불러오기 -->
+    <!--        <div>-->
+    <!--            <h3>댓글목록</h3>-->
+    <!--            <div id="commentList">-->
+    <!--                <tr th:each="comment : ${comments}">-->
+    <!--                    <div th:text="${comment.writer.memberName}">작성자</div>-->
+    <!--                    <div th:text="${comment.commentContent}" th:id="comment+${comment.commentId}">댓글 내용</div>-->
+    <!--                    <div th:text="${comment.createdDate}">작성일</div>-->
+    <!--                    <div th:id="commentButton + ${comment.commentId}">-->
+    <!--                        <button th:if="${comment.writer.memberNo.equals(session.memberNo)}"-->
+    <!--                                th:boardId = "${board.communityBoardId}"-->
+    <!--                                th:commentId = "${comment.commentId}"-->
+    <!--                                th:commentcontent="${comment.commentContent}"-->
+    <!--                                th:onclick="commentEdit(this.getAttribute('commentId'), this.getAttribute('commentcontent'), this.getAttribute('boardId'))">수정</button>-->
+    <!--                        <button th:if="${comment.writer.memberNo.equals(session.memberNo)}"-->
+    <!--                                th:boardId = "${board.communityBoardId}"-->
+    <!--                                th:commentId = "${comment.commentId}"-->
+    <!--                                th:onclick="commentDel(this.getAttribute('boardId'),this.getAttribute('commentId'))">삭제</button>-->
+    <!--                    </div>-->
+    <!--                </tr>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+
+    <div class="container">
+        <div class="container">
+            <div class="col-xs-12" style="margin:15px auto;">
+                <label style="font-size:20px;">
+                    <span class="glyphicon glyphicon-list-alt"></span>
+                    <h2>Q&A 상세보기</h2>
+                </label>
+            </div>
+            <div th:object="${board}">
+                <div class="form-group">
+                    <label for="subject">제목</label>
+                    <input type="text" class="form-control" id="subject" readonly th:value="*{communityBoardTitle}">
                 </div>
-            </form>
+                <div class="form-group">
+                    <label for="writer">작성자</label>
+                    <input type="text" class="form-control" id="writer" readonly th:value="*{writer.memberName}">
+                </div>
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <textarea class="form-control" id="content" name="content" rows="2" readonly
+                              th:text="*{communityBoardDetail}"></textarea>
+                </div>
+                <button th:onclick="|location.href='@{/questions}'|" id="list" class="btn btn-primary">목록으로</button>
+                <button th:if="${board.writer.memberNo.equals(session.memberNo)}"
+                        th:onclick="|location.href='@{/question/{boardId}/edit(boardId=${board.communityBoardId})}'|"
+                        class="btn btn-primary">수정
+                </button>
+                <button th:if="${board.writer.memberNo.equals(session.memberNo)}"
+                        th:boardId="${board.communityBoardId}"
+                        th:onclick="boardDel(this.getAttribute('boardId'))" id="board-del"
+                        class="btn btn-primary">삭제
+                </button>
+            </div>
         </div>
 
-        <!--- 댓글 불러오기 -->
-        <div>
-            <h3>댓글목록</h3>
-            <div id="commentList">
-                <tr th:each="comment : ${comments}">
-                    <div th:text="${comment.writer.memberName}">작성자</div>
-                    <div th:text="${comment.commentContent}" th:id="comment+${comment.commentId}">댓글 내용</div>
-                    <div th:text="${comment.createdDate}">작성일</div>
-                    <div th:id="commentButton + ${comment.commentId}">
-                        <button th:if="${comment.writer.memberNo.equals(session.memberNo)}"
-                                th:boardId = "${board.communityBoardId}"
-                                th:commentId = "${comment.commentId}"
-                                th:commentcontent="${comment.commentContent}"
-                                th:onclick="commentEdit(this.getAttribute('commentId'), this.getAttribute('commentcontent'), this.getAttribute('boardId'))">수정</button>
-                        <button th:if="${comment.writer.memberNo.equals(session.memberNo)}"
-                                th:boardId = "${board.communityBoardId}"
-                                th:commentId = "${comment.commentId}"
-                                th:onclick="commentDel(this.getAttribute('boardId'),this.getAttribute('commentId'))">삭제</button>
+        <!--  댓글  -->
+        <div class="card my-5">
+            <h5 class="card-header">댓글 작성</h5>
+            <div class="card-body">
+
+                <form th:action="@{/question/{boardId}/comment(boardId=${board.communityBoardId})}" method="POST"
+                      th:object="${comment}">
+                    <div class="form-group">
+                        <!-- <input type="hidden" name="idx" th:value="*{idx}" /> -->
+                        <textarea name="content" class="form-control" rows="3"
+                                  th:field="*{content}" th:errorclass="field-error"></textarea>
                     </div>
-                </tr>
+                    <button type="submit" class="btn btn-primary">작성하기</button>
+                </form>
+                <hr>
+
+
+                <!--   댓글 표기하기-->
+                <div class="commentList mb-3" th:each="comment : ${comments}" id="commentList">
+                    <p th:text="${comment.writer.memberName}"></p>
+                    <p class="float-right" th:text="${comment.createdDate}">작성 시간</p>
+                    <textarea name="content" class="form-control mb-3" rows="3" readonly
+                              th:text="${comment.commentContent}"
+                              th:id="comment+${comment.commentId}">
+                    </textarea>
+
+                    <div th:id="commentButton + ${comment.commentId}">
+                        <button class="btn btn-primary"
+                                th:if="${comment.writer.memberNo.equals(session.memberNo)}"
+                                th:boardId="${board.communityBoardId}"
+                                th:commentId="${comment.commentId}"
+                                th:commentcontent="${comment.commentContent}"
+                                th:onclick="commentEdit(this.getAttribute('commentId'), this.getAttribute('commentcontent'), this.getAttribute('boardId'))">
+                            수정
+                        </button>
+                        <button class="btn btn-primary"
+                                th:if="${comment.writer.memberNo.equals(session.memberNo)}"
+                                th:boardId="${board.communityBoardId}"
+                                th:commentId="${comment.commentId}"
+                                th:onclick="commentDel(this.getAttribute('boardId'),this.getAttribute('commentId'))">
+                            삭제하기
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- footer -->
 
-    <footer class="footer">
-        <hr>
-        <div>
-            <ul>
-                <li>이메일 : kmw3841@skuniv.ac.kr</li>
-                <li>주소 : 서울 성북구 서경대학교</li>
-                <li>연락처 : 010-0000-0000</li>
-                <li>copry right @ mwkim</li>
-            </ul>
-        </div>
+<!-- footer -->
+<div id='wrap'>
+    <footer class="py-5 bg-dark mt-auto">
+        <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
     </footer>
+</div>
+
+<style>
+    #wrap {
+        min-height: 20vh;
+        position: relative;
+        width: 100%;
+    }
+
+    footer {
+        width: 100%;
+        height: 110px;
+        /* 내용물에 따라 알맞는 값 설정 */
+        bottom: 0px;
+        position: absolute;
+    }
+
+    footer {
+        position: fixed;
+        left: 0px;
+        bottom: 0px;
+        height: 100px;
+        width: 100%;
+        background: grey;
+        color: white;
+        text-align: center
+    }
+</style>
+<!-- footer -->
+<!--    <footer class="footer">-->
+<!--        <hr>-->
+<!--        <div>-->
+<!--            <ul>-->
+<!--                <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+<!--                <li>주소 : 서울 성북구 서경대학교</li>-->
+<!--                <li>연락처 : 010-0000-0000</li>-->
+<!--                <li>copry right @ mwkim</li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </footer>-->
 
 </div>
 </body>

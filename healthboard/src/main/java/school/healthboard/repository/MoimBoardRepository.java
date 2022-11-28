@@ -7,15 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import school.healthboard.entity.CommunityBoard;
 import school.healthboard.entity.Member;
+import school.healthboard.entity.MoimBoard;
 
 import java.util.List;
 
-public interface CommunityBoardRepository extends JpaRepository<CommunityBoard, Long> {
-    @Query("SELECT C FROM CommunityBoard C ORDER BY C.createdDate DESC")
-    List<CommunityBoard> findAllDesc();
+public interface MoimBoardRepository extends JpaRepository<MoimBoard, Long> {
 
-    Page<CommunityBoard> findCommunityBoardByWriter(Member member, Pageable paging);
+    @Query("SELECT C FROM MoimBoard C ORDER BY C.createdDate DESC")
+    List<MoimBoard> findAllDesc();
+
+    Page<MoimBoard> findMoimBoardByWriter(Member member, Pageable paging);
 
     //제목 검색시
-    Page<CommunityBoard> findCommunityBoardByCommunityBoardTitleContaining(@Param("communityBoardTitle") String communityBoardTitle, Pageable pageable);
+    Page<MoimBoard> findMoimBoardByMoimBoardTitleContaining(@Param("moimBoardTitle") String moimBoardTitle, Pageable pageable);
+
 }

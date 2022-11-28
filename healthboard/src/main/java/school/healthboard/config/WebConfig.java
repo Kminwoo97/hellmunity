@@ -1,8 +1,7 @@
-package school.healthboard;
+package school.healthboard.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import school.healthboard.interceptor.LogInterceptor;
 import school.healthboard.interceptor.LoginCheckInterceptor;
@@ -25,7 +24,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/members/add", "/login", "/logout", "/questions", "/css/**", "/image/**", "/*.ico");
+                .excludePathPatterns("/", "/members/add", "/login", "/logout", "/questions", "/css/**", "/image/**", "/*.ico",
+                        "/moim");
     }
 
 }

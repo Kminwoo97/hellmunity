@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/default.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="stylesheet" th:href="@{/css/chatRoom.css}">
+    <title>Hellmunity</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+
+            var roomId = [[${room.roomId}]];
+            var loginMember = [[${loginMember.memberNo}]]; //채팅 보내는 사람 No
+            var loginMember_name = [[${loginMember.memberName}]]; //채팅 보내는 사람 닉네임
+            var chatMember = [[${chatMember.memberNo}]];
+            var chatMember_name = [[${chatMember.memberName}]];
+
+
+            var sockJs = new SockJS("/stomp/chat");
+            //1. SockJS를 내부에 들고있는 stomp를 내어줌
+            var stomp = Stomp.over(sockJs);
+
+            //2. connection이 맺어지면 실행
+            stomp.connect({}, function () {
+                //처음 connection 되면 콘솔에 찍어봄
+                console.log("STOMP Connection");
+
+
+                //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+                //방 입장하구(Connection 연결 동안) 메시지 전송하면 이거 호출 -> 화면에 채팅 뿌려주는 역할
+                stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+
+                    console.log("/sub/chat/room/ 호출됨");
+
+                    var content = JSON.parse(chat.body);
+                    var message = content.message;
+                    var writer = content.writer;
+                    var writer_name = content.writer_name;
+                    var str = '';
+
+                    if (writer == loginMember) {
+                        str = "<li class='me'>";
+                        str += "<div class='message'>";
+                        str += "<b>" + writer_name + " : " + message + "</b>";
+                        str += "</div></li>";
+                        $("#chat").append(str);
+                    } else {
+                        str = "<li class='you'>";
+                        str += "<div class='message'>";
+                        str += "<b>" + writer_name + " : " + message + "</b>";
+                        str += "</div></li>";
+                        $("#chat").append(str);
+                    }
+
+                    //스크롤 맨아래로
+                    var chat = document.querySelector('#chat');
+                    console.log("전 " + chat.scrollTop);
+                    chat.scrollTop = chat.scrollHeight;
+                    console.log("후 " + chat.scrollTop);
+                });
+
+
+                //3. send(path, header, message)로 메세지를 보낼 수 있음
+                //처음 Connection 되면 입장 메시지 출력
+                // stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: loginMember}))
+            });
+
+
+            //메시지 전송 버튼 클릭 시 -> /pub/chat/message 호출
+            $("#button-send").on("click", function (e) {
+                var msg = document.getElementById("msg");
+                stomp.send('/pub/chat/message', {}, JSON.stringify({
+                    roomId: roomId,
+                    message: msg.value,
+                    writer: loginMember,
+                    writer_name : loginMember_name,
+                    receiver : chatMember,
+                    receiver_name : chatMember_name
+                }));
+                msg.value = '';
+            });
+
+            $("#button-exit").on("click", function (e) {
+                stomp.disconnect();
+                location.href="/chat/rooms";
+            });
+
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="page">
+    <!-- header -->
+    <header class="header">
+        <img th:src="@{/image/dumbel.png}" alt="">
+        <a th:href="@{/}"><h1>Hellmunity</h1></a>
+    </header>
+
+    <!-- 로그인, 로그아웃 -->
+    <ul class="login">
+        <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
+            <li class="login-item">마이페이지</li>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/members/add}">
+            <li class="login-item">회원가입</li>
+        </a>
+
+        <a th:if="${session.memberNo}" id="logout" href="#">
+            <li class="login-item">로그아웃</li>
+        </a>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/login}">
+            <li class="login-item">로그인</li>
+        </a>
+    </ul>
+
+    <!-- menu -->
+    <ul class="menu">
+        <a th:href="@{/}"><li class="menu-item">홈</li></a>
+        <a th:href="@{/moim}"><li class="menu-item">모임</li></a>
+        <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
+    </ul>
+
+    <div class="main-content">
+
+        <div class="container">
+            <div class="text-center py-3">
+                <img th:src="@{/image/user.png}" alt class="ui-w-100 rounded-circle">
+
+                <div class="col-md-8 col-lg-6 col-xl-5 p-0 mx-auto">
+                    <h4 class="font-weight-bold my-4">[[${member.memberName}]]의 마이페이지</h4>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs tabs-alt justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link py-4" th:href="@{/member/mypage}">내 정보</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-4" th:href="@{/member/mypage/qnaList}">Q&A</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-4" th:href="@{/member/mypage/moimList}">모임 글</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-4 active" th:href="@{/chat/rooms}">채팅방</a>
+            </li>
+        </ul>
+
+
+        <!-- Page Content -->
+        <!-- Page Content -->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9 mx-auto mt-5 mb-5">
+
+                    <!-- 채팅방 디자인 -->
+                    <div id="container" class="row chat-container" style=" float: none; margin: 0 auto;">
+
+                        <main class="col">
+                            <header>
+                                <img th:src="@{/image/user.png}" alt="" style="width: 30px;">
+                                <div>
+                                    <h2>[[${room.roomName}]]</h2>
+                                </div>
+<!--                                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">-->
+                            </header>
+
+                            <!--    DB에서 채팅 불러오기  + 실시간 채팅 뿌려주기-->
+                            <ul id="chat">
+                                <div th:each="message : ${messages}">
+                                    <li th:if="${message.writer_name == member.memberName}" th:class="me">
+                                        <div th:class="message">[[${message.writer_name}]] : [[${message.message}]]</div>
+                                    </li>
+                                    <li th:if="${message.writer_name != member.memberName}" th:class="you">
+                                        <div th:class="message">[[${message.writer_name}]] : [[${message.message}]]</div>
+                                    </li>
+                                </div>
+                            </ul>
+                            <!--   실시간으로 채팅 기록  -->
+<!--                            <ul id="chat"></ul>-->
+
+
+                            <footer>
+                                <textarea placeholder="Type your message" id="msg"></textarea>
+                                <a class="asdfasd" id="button-send">Send</a>
+                            </footer>
+
+                        </main>
+                    </div>
+                    <!-- 채팅방 디자인 끝 -->
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Footer -->
+<div id='wrap'>
+    <footer class="main-footer py-5 bg-dark mt-auto">
+        <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
+    </footer>
+</div>
+
+<style>
+    #wrap {
+        min-height: 20vh;
+        position: relative;
+        width: 100%;
+    }
+
+    .main-footer {
+        width: 100%;
+        height: 110px;
+        /* 내용물에 따라 알맞는 값 설정 */
+        bottom: 0px;
+        position: absolute;
+    }
+    .main-footer{ position:fixed;
+        left:0px;
+        bottom:0px;
+        height:100px;
+        width:100%;
+        background:grey;
+        color: white;
+        text-align: center}
+</style>
+
+<!--<footer class="footer">-->
+<!--    <hr>-->
+<!--    <div>-->
+<!--        <ul>-->
+<!--            <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+<!--            <li>주소 : 서울 성북구 서경대학교</li>-->
+<!--            <li>연락처 : 010-0000-0000</li>-->
+<!--            <li>copry right @ mwkim</li>-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</footer>-->
+
+</div>
+</body>
+
+</html>

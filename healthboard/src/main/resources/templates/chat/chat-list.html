@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅</title>
+    <link rel="stylesheet" th:href="@{/css/default.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <link rel="stylesheet" th:href="@{/css/room_list.css}">
+
+
+    <!-- sock js -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <!-- STOMP -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+    <script type="text/javascript">
+        function chatRoomExit(roomId){
+            if (!confirm("채팅방을 나가겠습니까?")) {
+                return false;
+            }
+
+            //form형식으로 삭제 api 요청하기
+            var f = document.createElement('form');
+            f.setAttribute('method', 'post');
+            f.setAttribute('action', '/chat/room/'+roomId+'/exit');
+            document.body.appendChild(f);
+            f.submit();
+        }
+    </script>
+
+
+</head>
+<body>
+
+<!-- 채팅방 목록 -->
+<main>
+    <h1>채팅방</h1>
+    <nav>
+        <span>방 제목</span>
+    </nav>
+    <hr>
+
+    <ul th:each="chatRoom : ${chatRoomList}">
+        <li>
+            <a href="#" th:text="${chatRoom.roomName}"
+               th:href="@{/chat/room/{roomId}(roomId=${chatRoom.roomId})}">
+                <span class="chat_title">채팅방 제목</span>
+            </a>
+            <span><button th:roomId="${chatRoom.roomId}"
+                          th:onclick="chatRoomExit(this.getAttribute('roomId'))">채팅방 나가기</button></span>
+        </li>
+    </ul>
+</main>
+
+
+<!-- 채팅방 목록 -->
+
+<!-- 채팅방 입장 -->
+<!--<div class="chat">-->
+<!--    <div>-->
+<!--        <div class="chat_body">-->
+<!--            <h2 class="chat_title">1번방</h2>-->
+<!--            <button class="chat_back">◀</button>-->
+
+<!--            <ul class="chat_list" th:each="chatRoom : ${chatRoomList}">-->
+<!--                <li>-->
+<!--                    <div class="notification">-->
+<!--                        <span></span>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--            </ul>-->
+
+<!--            <div class="chat_input">-->
+<!--                <div class="chat_input_area">-->
+<!--                    <textarea></textarea>-->
+<!--                </div>-->
+
+<!--                <div class="chat_button_area">-->
+<!--                    <button>전송</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="chat_users">-->
+<!--            <h2>-->
+<!--                참가인원-->
+<!--                <span class="user"></span>-->
+<!--            </h2>-->
+
+<!--            <div class="chat_nickname">-->
+<!--                <ul>-->
+<!--                    <li>-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+</body>
+</html>

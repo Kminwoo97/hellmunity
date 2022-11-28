@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+
+            var roomId = [[${room.roomId}]];
+            var loginMember = [[${loginMember.memberNo}]]; //채팅 보내는 사람 No
+            var loginMember_name = [[${loginMember.memberName}]]; //채팅 보내는 사람 닉네임
+            var chatMember = [[${chatMember.memberNo}]];
+            var chatMember_name = [[${chatMember.memberName}]];
+
+
+            var sockJs = new SockJS("/stomp/chat");
+            //1. SockJS를 내부에 들고있는 stomp를 내어줌
+            var stomp = Stomp.over(sockJs);
+
+            //2. connection이 맺어지면 실행
+            stomp.connect({}, function () {
+                //처음 connection 되면 콘솔에 찍어봄
+                console.log("STOMP Connection");
+
+
+                //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+                //방 입장하구(Connection 연결 동안) 메시지 전송하면 이거 호출 -> 화면에 채팅 뿌려주는 역할
+                stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+
+                    console.log("/sub/chat/room/ 호출됨");
+
+                    var content = JSON.parse(chat.body);
+                    var message = content.message;
+                    var writer = content.writer;
+                    var writer_name = content.writer_name;
+                    var str = '';
+
+                    if (writer == loginMember) {
+                        str = "<div class='col-6'>";
+                        str += "<div class='alert alert-secondary'>";
+                        str += "<b>" + writer_name + " : " + message + "</b>";
+                        str += "</div></div>";
+                        $("#msgArea").append(str);
+                    } else {
+                        str = "<div class='col-6'>";
+                        str += "<div class='alert alert-warning'>";
+                        str += "<b>" + writer_name + " : " + message + "</b>";
+                        str += "</div></div>";
+                        $("#msgArea").append(str);
+                    }
+
+                });
+
+
+                //3. send(path, header, message)로 메세지를 보낼 수 있음
+                //처음 Connection 되면 입장 메시지 출력
+                // stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: loginMember}))
+            });
+
+
+            //메시지 전송 시, /pub/chat/message 호출
+            $("#button-send").on("click", function (e) {
+                var msg = document.getElementById("msg");
+                stomp.send('/pub/chat/message', {}, JSON.stringify({
+                    roomId: roomId,
+                    message: msg.value,
+                    writer: loginMember,
+                    writer_name : loginMember_name,
+                    receiver : chatMember,
+                    receiver_name : chatMember_name
+                }));
+                msg.value = '';
+            });
+
+            $("#button-exit").on("click", function (e) {
+                stomp.disconnect();
+                location.href="/chat/rooms";
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="col-6">
+            <h1>[[${room.roomName}]]</h1>
+        </div>
+        <div>
+            <div th:each="message : ${messages}">
+                <div>[[${message.writer_name}]] : [[${message.message}]]</div>
+            </div>
+            <div id="msgArea" class="col"></div>
+            <div class="col-6">
+                <div class="input-group mb-3">
+                    <input type="text" id="msg" name="message"class="form-control">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
+                        <button>목록으로</button>
+                        <button type="button" id="button-exit">나가기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6"></div>
+    </div>
+</body>
+
+</html>

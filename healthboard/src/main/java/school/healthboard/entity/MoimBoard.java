@@ -14,17 +14,20 @@ import java.time.LocalDateTime;
 public class MoimBoard extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long moimBoardId;
-
     private String moimBoardTitle;
-    private LocalDateTime moimBoardDay;
+    private String moimBoardDetail;
 
-
-    private int moimBoardTotalPerson;
-    private int moimBoardCurPerson;
+//    private LocalDateTime moimBoardDay;
+//    private int moimBoardTotalPerson;
+//    private int moimBoardCurPerson;
 
 
     @ManyToOne
     @JoinColumn(name = "memberNo")
     private Member writer;
 
+    public void setWriter(Member writer) {
+        this.writer = writer;
+        writer.getMoimBoardList().add(this);
+    }
 }

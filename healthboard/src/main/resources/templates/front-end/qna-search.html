@@ -122,78 +122,30 @@
             </div>
         </div>
 
-      <!--내가 만든 페이지 처리-->
-<!--        <div class="page_wrap">-->
-<!--            <div class="page_nation">-->
-<!--                <a class="arrow pprev" href="#"></a>-->
-<!--                <a class="arrow prev" href="#"></a>-->
-<!--                <a href="#" class="active">1</a>-->
-<!--                <a href="#">2</a>-->
-<!--                <a href="#">3</a>-->
-<!--                <a href="#">4</a>-->
-<!--                <a class="arrow next" href="#"></a>-->
-<!--                <a class="arrow nnext" href="#"></a>-->
-<!--            </div>-->
-<!--        </div>-->
-
         <div class="page_wrap"
              th:with="start=${(boardList.number/maxPage)*maxPage + 1},
              end=(${(boardList.totalPages == 0) ? 1 : (start + (maxPage - 1) < boardList.totalPages ? start + (maxPage - 1) : boardList.totalPages)})">
             <div class="page_nation">
                 <!--첫 페이지로 이동-->
-                <a th:if="${start > 1}" th:href="@{/questions?(page=0)}" th:text="'<<'"></a>
+                <a th:if="${start > 1}" th:href="@{/questions/search?(page=0,,communityBoardTitle=${communityBoardTitle})}" th:text="'<<'"></a>
 
                 <!--이전 페이지로 이동-->
-                <a th:if="${start > 1}" th:href="@{/questions?(page=${start - maxPage - 1})}" th:text="'<'"></a>
+                <a th:if="${start > 1}" th:href="@{/questions/search?(page=${start - maxPage - 1},,communityBoardTitle=${communityBoardTitle})}" th:text="'<'"></a>
 
                 <!--페이지 표기-->
-                <a th:each="page: ${#numbers.sequence(start, end)}" th:href="@{/questions?(page=${page-1})}"
+                <a th:each="page: ${#numbers.sequence(start, end)}" th:href="@{/questions/search?(page=${page-1},communityBoardTitle=${communityBoardTitle})}"
                    th:text="${page}"
                    th:classappend="${page-1 == boardList.number} ? 'active'"></a>
 
                 <!--다음 장으로 이동 -->
-                <a th:if="${end < boardList.totalPages}" th:href="@{/questions?(page=${start + maxPage - 1})}"
+                <a th:if="${end < boardList.totalPages}" th:href="@{/questions/search?(page=${start + maxPage - 1},communityBoardTitle=${communityBoardTitle})}"
                    th:text="'>'"></a>
 
                 <!--마지막 페이지로 이동-->
-                <a th:if="${end < boardList.totalPages}" th:href="@{/questions?(page=${boardList.totalPages-1})}"
+                <a th:if="${end < boardList.totalPages}" th:href="@{/questions/search?(page=${boardList.totalPages-1},communityBoardTitle=${communityBoardTitle})}"
                    th:text="'>>'"></a>
             </div>
         </div>
-
-
-<!--        <div th:with="start=${(boardList.number/maxPage)*maxPage + 1},-->
-<!--                    end=(${(boardList.totalPages == 0) ? 1 : (start + (maxPage - 1) < boardList.totalPages ? start + (maxPage - 1) : boardList.totalPages)})">-->
-<!--            <div class="page_wrap">-->
-<!--                <ul th:if="!${boardList.isEmpty()}" th:class="page_nation">-->
-<!--                    &lt;!&ndash;첫 페이지로 이동&ndash;&gt;-->
-<!--                    <li th:if="${start > 1}">-->
-<!--                        <a th:href="@{/questions?(page=0)}" th:text="'<<'"></a></li>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;이전 페이지로 이동&ndash;&gt;-->
-<!--                    <li th:if="${start > 1}">-->
-<!--                        <a th:href="@{/questions?(page=${start - maxPage})}" th:text="'<'"></a>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;페이지 표기&ndash;&gt;-->
-<!--                    <li th:each="page: ${#numbers.sequence(start, end)}">-->
-<!--                        <a th:href="@{/questions?(page=${page-1})}" th:text="${page}"></a></li>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;다음 장으로 이동 &ndash;&gt;-->
-<!--                    <li th:if="${end < boardList.totalPages}">-->
-<!--                        <a th:href="@{/questions?(page=${start + maxPage})}" th:text="'>'"></a>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;마지막 페이지로 이동&ndash;&gt;-->
-<!--                    <li th:if="${end < boardList.totalPages}">-->
-<!--                        <a th:href="@{/questions?(page=${boardList.totalPages-1})}" th:text="'>>'"></a></li>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </div>-->
-
 
 
         <!-- footer -->
@@ -228,17 +180,17 @@
                 text-align: center}
         </style>
         <!-- footer -->
-<!--        <footer class="footer">-->
-<!--            <hr>-->
-<!--            <div>-->
-<!--                <ul>-->
-<!--                    <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
-<!--                    <li>주소 : 서울 성북구 서경대학교</li>-->
-<!--                    <li>연락처 : 010-0000-0000</li>-->
-<!--                    <li>copry right @ mwkim</li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </footer>-->
+        <!--        <footer class="footer">-->
+        <!--            <hr>-->
+        <!--            <div>-->
+        <!--                <ul>-->
+        <!--                    <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+        <!--                    <li>주소 : 서울 성북구 서경대학교</li>-->
+        <!--                    <li>연락처 : 010-0000-0000</li>-->
+        <!--                    <li>copry right @ mwkim</li>-->
+        <!--                </ul>-->
+        <!--            </div>-->
+        <!--        </footer>-->
 </body>
 
 </html>

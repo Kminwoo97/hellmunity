@@ -2,6 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 
 <head>
+
+  <!-- Bootstrap core CSS -->
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,13 +16,15 @@
   <!-- Jquery Import  -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script type="text/javascript">
+
     window.onload = function() {
       var httpRequest;
       // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
       document.getElementById("logout").addEventListener('click', () => {
         httpRequest = new XMLHttpRequest();
-        httpRequest.open('POST', '/logout', true);
+        httpRequest.open('POST', '/logout', false); //false 옵션은 비동기 처리 X
         httpRequest.send();
+        alert("로그아웃 처리 완료");
         window.location.href="/";
       });
     }
@@ -35,7 +41,7 @@
 
   <!-- 로그인, 로그아웃 -->
   <ul class="login">
-    <a th:if="${session.memberNo}" href="#">
+    <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
       <li class="login-item">마이페이지</li>
     </a>
     <a th:unless="${session.memberNo}" th:href="@{/members/add}">
@@ -51,48 +57,114 @@
     </a>
   </ul>
 
+  <!-- menu -->
+  <ul class="menu">
+    <a th:href="@{/}"><li class="menu-item">홈</li></a>
+    <a th:href="@{/moim}"><li class="menu-item">모임</li></a>
+    <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
+  </ul>
+
     <!-- Q&A 폼-->
-    <div class="main-block">
-      <div>
-        <form th:action th:object="${communityBoard}" th:method="POST" class="qna-form">
+<!--    <div class="main-block">-->
+<!--      <div>-->
+<!--        <form th:action th:object="${communityBoard}" th:method="POST" class="qna-form">-->
 
+<!--          <h2>Q&A 작성</h2>-->
+
+<!--          <div>-->
+<!--            <label th:for="title">제목</label>-->
+<!--            <input type="text" th:id="title" th:field="*{communityBoardTitle}">-->
+
+<!--          </div>-->
+
+<!--          <div>-->
+<!--            <label th:for="content">내용</label>-->
+<!--            <input type="text" th:id="content" th:field="*{communityBoardDetail}">-->
+<!--          </div>-->
+
+<!--          <div>-->
+<!--            <button type="submit">게시물 등록</button>-->
+<!--          </div>-->
+<!--          <div class="col">-->
+<!--            <button th:onclick="|location.href='@{/questions}'|" type="button">취소</button>-->
+<!--          </div>-->
+<!--        </form>-->
+<!--      </div>-->
+<!--    </div>-->
+
+  <div class="container">
+
+    <div class="container">
+      <div class="col-xs-12" style="margin:15px auto;">
+        <label style="font-size:20px;">
+          <span class="glyphicon glyphicon-list-alt"></span>
           <h2>Q&A 작성</h2>
-
-          <div>
-            <label th:for="title">제목</label>
-            <input type="text" th:id="title" th:field="*{communityBoardTitle}">
-
-          </div>
-
-          <div>
-            <label th:for="content">내용</label>
-            <input type="text" th:id="content" th:field="*{communityBoardDetail}">
-          </div>
-
-          <div>
-            <button type="submit">게시물 등록</button>
-          </div>
-          <div class="col">
-            <button th:onclick="|location.href='@{/questions}'|" type="button">취소</button>
-          </div>
-
-        </form>
+        </label>
       </div>
+      <form th:action th:object="${communityBoard}" th:method="POST">
+        <div class="form-group">
+          <label th:for="title">제목</label>
+          <input  class="form-control" type="text" th:id="title" th:field="*{communityBoardTitle}">
+        </div>
+
+        <div class="form-group">
+          <label th:for="content">내용</label>
+          <textarea class="form-control" th:id="content" th:field="*{communityBoardDetail}" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">작성</button>
+<!--        <button class="btn btn-primary" th:onclick="|location.href='@{/questions}'|">취소</button>-->
+        <a class="btn btn-primary" th:href="@{/questions}">취소</a>
+      </form>
     </div>
+  </div>
+
+
+
+
+  <!-- footer -->
+  <div id='wrap'>
+    <footer class="py-5 bg-dark mt-auto">
+      <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
+    </footer>
+  </div>
+
+  <style>
+    #wrap {
+      min-height: 20vh;
+      position: relative;
+      width: 100%;
+    }
+
+    footer {
+      width: 100%;
+      height: 110px;
+      /* 내용물에 따라 알맞는 값 설정 */
+      bottom: 0px;
+      position: absolute;
+    }
+
+    footer{ position:fixed;
+      left:0px;
+      bottom:0px;
+      height:100px;
+      width:100%;
+      background:grey;
+      color: white;
+      text-align: center}
+  </style>
 
     <!-- footer -->
-
-    <footer class="footer">
-      <hr>
-      <div>
-        <ul>
-          <li>이메일 : kmw3841@skuniv.ac.kr</li>
-          <li>주소 : 서울 성북구 서경대학교</li>
-          <li>연락처 : 010-0000-0000</li>
-          <li>copry right @ mwkim</li>
-        </ul>
-      </div>
-    </footer>
+<!--    <footer class="footer">-->
+<!--      <hr>-->
+<!--      <div>-->
+<!--        <ul>-->
+<!--          <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+<!--          <li>주소 : 서울 성북구 서경대학교</li>-->
+<!--          <li>연락처 : 010-0000-0000</li>-->
+<!--          <li>copry right @ mwkim</li>-->
+<!--        </ul>-->
+<!--      </div>-->
+<!--    </footer>-->
 
   </div>
 </body>

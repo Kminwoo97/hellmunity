@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/default.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <title>Hellmunity</title>
+    <!-- Jquery Import  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        window.onload = function() {
+            var httpRequest;
+            // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
+            document.getElementById("logout").addEventListener('click', () => {
+                httpRequest = new XMLHttpRequest();
+                httpRequest.open('POST', '/logout', false); //false 옵션은 비동기 처리 X
+                httpRequest.send();
+                alert("로그아웃 처리 완료");
+                window.location.href="/";
+            });
+        }
+
+        //모임글 삭제하기 버튼 클릭
+        function boardDel(moimId) {
+            if (!confirm("게시물을 삭제하시겠습니까?")) {
+                return false;
+            }
+
+            //form형식으로 삭제 api 요청하기
+            var f = document.createElement('form');
+            f.setAttribute('method', 'post');
+            f.setAttribute('action', '/moim/' + moimId + '/delete');
+            document.body.appendChild(f);
+            f.submit();
+        }
+
+        function enterChat(moimTitle, hostId) {
+
+            console.log("채팅 시작하기 버튼");
+            //form형식으로 삭제 api 요청하기
+            var moim = document.createElement('input');
+            ;
+            moim.setAttribute('type', 'hidden');
+            moim.setAttribute('name', 'moimTitle');
+            moim.setAttribute('value', moimTitle);
+
+            var host = document.createElement('input');
+            ;
+            host.setAttribute('type', 'hidden');
+            host.setAttribute('name', 'hostId');
+            host.setAttribute('value', hostId);
+
+            var f = document.createElement('form');
+            f.setAttribute('method', 'post');
+            f.setAttribute('action', '/chat/new');
+            f.appendChild(moim);
+            f.appendChild(host);
+            document.body.appendChild(f);
+            f.submit();
+        }
+
+    </script>
+</head>
+
+<body>
+<div class="page">
+    <!-- header -->
+    <header class="header">
+        <img th:src="@{/image/dumbel.png}" alt="">
+        <a th:href="@{/}"><h1>Hellmunity</h1></a>
+    </header>
+
+    <!-- 로그인, 로그아웃 -->
+    <ul class="login">
+        <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
+            <li class="login-item">마이페이지</li>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/members/add}">
+            <li class="login-item">회원가입</li>
+        </a>
+
+        <a th:if="${session.memberNo}" id="logout" href="#">
+            <li class="login-item">로그아웃</li>
+        </a>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/login}">
+            <li class="login-item">로그인</li>
+        </a>
+    </ul>
+
+    <!-- menu -->
+    <ul class="menu">
+        <a th:href="@{/}"><li class="menu-item">홈</li></a>
+        <a th:href="@{/moim}"><li class="menu-item">모임</li></a>
+        <a th:href="@{/questions}"><li class="menu-item">Q&A</li></a>
+    </ul>
+
+    <div class="container">
+        <div class="container">
+            <div class="col-xs-12" style="margin:15px auto;">
+                <label style="font-size:20px;">
+                    <span class="glyphicon glyphicon-list-alt"></span>
+                    <h2>모임글 상세보기</h2>
+                </label>
+            </div>
+            <div th:object="${moim}">
+                <div class="form-group">
+                    <label for="subject">제목</label>
+                    <input type="text" class="form-control" id="subject" readonly th:value="*{moimBoardTitle}">
+                </div>
+                <div class="form-group">
+                    <label for="writer">작성자</label>
+                    <input type="text" class="form-control" id="writer" readonly th:value="*{writer.memberName}">
+                </div>
+
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <textarea class="form-control" id="content" name="content" rows="2" readonly
+                              th:text="*{moimBoardDetail}"></textarea>
+                </div>
+
+
+                <button th:unless="${moim.writer.memberNo.equals(session.memberNo)}"
+                        th:moimTitle="${moim.moimBoardTitle}"
+                        th:hostId="${moim.writer.memberNo}"
+                        th:onclick="enterChat(this.getAttribute('moimTitle'), this.getAttribute('hostId'))"
+                        class="btn btn-primary">1:1 채팅
+                </button>
+                <a th:href="@{/moim}" id="list" class="btn btn-primary">목록으로</a>
+
+                <a th:if="${moim.writer.memberNo.equals(session.memberNo)}"
+                   th:href="@{/moim/{moimId}/edit(moimId=${moim.moimBoardId})}" id="modify" class="btn btn-primary">수정하기</a>
+
+                <a th:if="${moim.writer.memberNo.equals(session.memberNo)}"
+                   th:moimId="${moim.moimBoardId}"
+                   th:onclick="boardDel(this.getAttribute('moimId'))" id="board-del" class="btn btn-primary">삭제하기</a>
+            </div>
+        </div>
+    </div>
+
+
+<!--     Q&A 상세보기 폼-->
+<!--    <div class="main-block">-->
+<!--        <table class="board_view" th:object="${moim}">-->
+<!--            <caption>상세보기</caption>-->
+<!--            <colgroup>-->
+<!--                <col width="15%">-->
+<!--                <col width="35%">-->
+<!--                <col width="15%">-->
+<!--                <col width="*">-->
+<!--            </colgroup>-->
+
+<!--            <tbody>-->
+<!--            <tr>-->
+<!--                <th>제목</th>-->
+<!--                <td th:text="*{moimBoardTitle}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>작성자</th>-->
+<!--                <td th:text="*{writer.memberName}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>내용</th>-->
+<!--                <td th:text="*{moimBoardDetail}" colspan="3"></td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--        <button th:unless="${moim.writer.memberNo.equals(session.memberNo)}"-->
+<!--                th:moimTitle="${moim.moimBoardTitle}"-->
+<!--                th:hostId="${moim.writer.memberNo}"-->
+<!--                th:onclick="enterChat(this.getAttribute('moimTitle'), this.getAttribute('hostId'))">1:1 채팅-->
+<!--        </button>-->
+<!--        <a th:href="@{/moim}" id="list" class="btn">목록으로</a>-->
+
+<!--        <a th:if="${moim.writer.memberNo.equals(session.memberNo)}"-->
+<!--           th:href="@{/moim/{moimId}/edit(moimId=${moim.moimBoardId})}" id="modify" class="btn">수정하기</a>-->
+
+<!--        <a th:if="${moim.writer.memberNo.equals(session.memberNo)}"-->
+<!--           th:moimId="${moim.moimBoardId}"-->
+<!--           th:onclick="boardDel(this.getAttribute('moimId'))" id="board-del" class="btn">삭제하기</a>-->
+
+<!--    </div>-->
+
+
+    <!-- footer -->
+    <div id='wrap'>
+        <footer class="py-5 bg-dark mt-auto">
+            <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
+        </footer>
+    </div>
+
+    <style>
+        #wrap {
+            min-height: 20vh;
+            position: relative;
+            width: 100%;
+        }
+
+        footer {
+            width: 100%;
+            height: 110px;
+            /* 내용물에 따라 알맞는 값 설정 */
+            bottom: 0px;
+            position: absolute;
+        }
+
+        footer {
+            position: fixed;
+            left: 0px;
+            bottom: 0px;
+            height: 100px;
+            width: 100%;
+            background: grey;
+            color: white;
+            text-align: center
+        }
+    </style>
+    <!-- footer -->
+    <!--    <footer class="footer">-->
+    <!--        <hr>-->
+    <!--        <div>-->
+    <!--            <ul>-->
+    <!--                <li>이메일 : kmw3841@skuniv.ac.kr</li>-->
+    <!--                <li>주소 : 서울 성북구 서경대학교</li>-->
+    <!--                <li>연락처 : 010-0000-0000</li>-->
+    <!--                <li>copry right @ mwkim</li>-->
+    <!--            </ul>-->
+    <!--        </div>-->
+    <!--    </footer>-->
+
+</div>
+</body>
+
+</html>

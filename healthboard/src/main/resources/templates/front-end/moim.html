@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 
 <head>
+
     <!-- Bootstrap core CSS -->
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 
@@ -16,7 +17,6 @@
     <!-- Jquery Import  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript">
-
         window.onload = function() {
             var httpRequest;
             // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
@@ -68,7 +68,7 @@
     <section class="notice">
         <div class="page-title">
             <div class="container">
-                <h3>Q&A 게시글 </h3>
+                <h3>모임 게시글</h3>
             </div>
         </div>
 
@@ -76,17 +76,17 @@
         <div id="board-search">
             <div class="container">
                 <div class="search-window">
-                    <form th:action="@{/questions/search}" th:method="GET">
+                    <form th:action="@{/moim/search}">
                         <div class="search-wrap">
-                            <label for="search" class="blind">Q&A 제목으로 검색</label>
-                            <input id="search" type="search" name="communityBoardTitle" placeholder="검색어를 입력해주세요." value="">
+                            <label for="search" class="blind">모임 게시글</label>
+                            <input id="search" type="search" name="moimBoardTitle" placeholder="검색어를 입력해주세요." value="">
                             <button type="submit" class="btn btn-dark">검색</button>
                         </div>
                     </form>
 
                     <div class="qna-register">
-                        <button class="btn-qna-register btn btn-dark" th:onclick="|location.href='@{/question/add}'|">
-                            Q&A 작성
+                        <button class="btn-qna-register btn btn-dark" th:onclick="|location.href='@{/moim/add}'|">
+                            모임글 작성
                         </button>
                     </div>
 
@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <!-- board 목록 -->
+        <!-- moim 목록 -->
         <div id="board-list">
             <div class="container">
                 <table class="board-table">
@@ -107,92 +107,47 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="board : ${boardList}">
-                        <td th:text="${board.communityBoardId}">번호</td>
+                    <tr th:each="moim : ${moimList}">
+                        <td th:text="${moim.moimBoardId}">번호</td>
                         <td>
-                            <a href="#" th:text="${board.communityBoardTitle}"
-                               th:href="@{/question/{id}(id=${board.communityBoardId})}">제목
+                            <a href="#" th:text="${moim.moimBoardTitle}"
+                               th:href="@{/moim/{moimId}(moimId=${moim.moimBoardId})}">제목
                             </a>
                         </td>
-                        <td th:text="${board.createdDate}">등록일</td>
-                        <td th:text="${board.writer.memberId}">board 작성자</td>
+                        <td th:text="${moim.createdDate}">등록일</td>
+                        <td th:text="${moim.writer.memberId}">board 작성자</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-      <!--내가 만든 페이지 처리-->
-<!--        <div class="page_wrap">-->
-<!--            <div class="page_nation">-->
-<!--                <a class="arrow pprev" href="#"></a>-->
-<!--                <a class="arrow prev" href="#"></a>-->
-<!--                <a href="#" class="active">1</a>-->
-<!--                <a href="#">2</a>-->
-<!--                <a href="#">3</a>-->
-<!--                <a href="#">4</a>-->
-<!--                <a class="arrow next" href="#"></a>-->
-<!--                <a class="arrow nnext" href="#"></a>-->
-<!--            </div>-->
-<!--        </div>-->
 
         <div class="page_wrap"
-             th:with="start=${(boardList.number/maxPage)*maxPage + 1},
-             end=(${(boardList.totalPages == 0) ? 1 : (start + (maxPage - 1) < boardList.totalPages ? start + (maxPage - 1) : boardList.totalPages)})">
+             th:with="start=${(moimList.number/maxPage)*maxPage + 1},
+             end=(${(moimList.totalPages == 0) ? 1 : (start + (maxPage - 1) < moimList.totalPages ? start + (maxPage - 1) : moimList.totalPages)})">
             <div class="page_nation">
                 <!--첫 페이지로 이동-->
-                <a th:if="${start > 1}" th:href="@{/questions?(page=0)}" th:text="'<<'"></a>
+                <a th:if="${start > 1}" th:href="@{/moim?(page=0)}" th:text="'<<'"></a>
 
                 <!--이전 페이지로 이동-->
-                <a th:if="${start > 1}" th:href="@{/questions?(page=${start - maxPage - 1})}" th:text="'<'"></a>
+                <a th:if="${start > 1}" th:href="@{/moim?(page=${start - maxPage - 1})}" th:text="'<'"></a>
 
                 <!--페이지 표기-->
-                <a th:each="page: ${#numbers.sequence(start, end)}" th:href="@{/questions?(page=${page-1})}"
+                <a th:each="page: ${#numbers.sequence(start, end)}" th:href="@{/moim?(page=${page-1})}"
                    th:text="${page}"
-                   th:classappend="${page-1 == boardList.number} ? 'active'"></a>
+                   th:classappend="${page-1 == moimList.number} ? 'active'"></a>
 
                 <!--다음 장으로 이동 -->
-                <a th:if="${end < boardList.totalPages}" th:href="@{/questions?(page=${start + maxPage - 1})}"
+                <a th:if="${end < moimList.totalPages}" th:href="@{/moim?(page=${start + maxPage - 1})}"
                    th:text="'>'"></a>
 
                 <!--마지막 페이지로 이동-->
-                <a th:if="${end < boardList.totalPages}" th:href="@{/questions?(page=${boardList.totalPages-1})}"
+                <a th:if="${end < moimList.totalPages}" th:href="@{/moim?(page=${moimList.totalPages-1})}"
                    th:text="'>>'"></a>
             </div>
         </div>
 
-
-<!--        <div th:with="start=${(boardList.number/maxPage)*maxPage + 1},-->
-<!--                    end=(${(boardList.totalPages == 0) ? 1 : (start + (maxPage - 1) < boardList.totalPages ? start + (maxPage - 1) : boardList.totalPages)})">-->
-<!--            <div class="page_wrap">-->
-<!--                <ul th:if="!${boardList.isEmpty()}" th:class="page_nation">-->
-<!--                    &lt;!&ndash;첫 페이지로 이동&ndash;&gt;-->
-<!--                    <li th:if="${start > 1}">-->
-<!--                        <a th:href="@{/questions?(page=0)}" th:text="'<<'"></a></li>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;이전 페이지로 이동&ndash;&gt;-->
-<!--                    <li th:if="${start > 1}">-->
-<!--                        <a th:href="@{/questions?(page=${start - maxPage})}" th:text="'<'"></a>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;페이지 표기&ndash;&gt;-->
-<!--                    <li th:each="page: ${#numbers.sequence(start, end)}">-->
-<!--                        <a th:href="@{/questions?(page=${page-1})}" th:text="${page}"></a></li>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;다음 장으로 이동 &ndash;&gt;-->
-<!--                    <li th:if="${end < boardList.totalPages}">-->
-<!--                        <a th:href="@{/questions?(page=${start + maxPage})}" th:text="'>'"></a>-->
-<!--                    </li>-->
-
-<!--                    &lt;!&ndash;마지막 페이지로 이동&ndash;&gt;-->
-<!--                    <li th:if="${end < boardList.totalPages}">-->
-<!--                        <a th:href="@{/questions?(page=${boardList.totalPages-1})}" th:text="'>>'"></a></li>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </div>-->
 
 
 
@@ -227,6 +182,8 @@
                 color: white;
                 text-align: center}
         </style>
+
+
         <!-- footer -->
 <!--        <footer class="footer">-->
 <!--            <hr>-->
@@ -240,5 +197,4 @@
 <!--            </div>-->
 <!--        </footer>-->
 </body>
-
 </html>
