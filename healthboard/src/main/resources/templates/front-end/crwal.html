@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/default.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <title>Hellmunity</title>
+
+    <!-- Jquery Import  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var httpRequest;
+            // 호출 버튼을 클릭하였을 때, 데이터를 요청하고 받아오는 Ajax 구현 부분
+            document.getElementById("logout").addEventListener('click', () => {
+                httpRequest = new XMLHttpRequest();
+                httpRequest.open('POST', '/logout', false); //false 옵션은 비동기 처리 X
+                httpRequest.send();
+                alert("로그아웃 처리 완료");
+                window.location.href = "/";
+            });
+        }
+    </script>
+</head>
+
+<body>
+<div class="page">
+    <!-- header -->
+    <header class="header">
+        <img th:src="@{/image/dumbel.png}" alt="">
+        <a th:href="@{/}"><h1>Hellmunity</h1></a>
+    </header>
+
+    <!-- 로그인, 로그아웃 -->
+    <ul class="login">
+        <a th:if="${session.memberNo}" th:href="@{/member/mypage}">
+            <li class="login-item">마이페이지</li>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/members/add}">
+            <li class="login-item">회원가입</li>
+        </a>
+
+        <a th:if="${session.memberNo}" id="logout" href="#">
+            <li class="login-item">로그아웃</li>
+        </a>
+        </a>
+        <a th:unless="${session.memberNo}" th:href="@{/login}">
+            <li class="login-item">로그인</li>
+        </a>
+    </ul>
+
+    <!-- menu -->
+    <ul class="menu">
+        <a th:href="@{/}">
+            <li class="menu-item">홈</li>
+        </a>
+        <a th:href="@{/moim}">
+            <li class="menu-item">모임</li>
+        </a>
+        <a th:href="@{/questions}">
+            <li class="menu-item">Q&A</li>
+        </a>
+    </ul>
+
+    <!-- crwal result-->
+    <div th:each="result, index : ${results}">
+        <div class="row">
+            <div class="col-md-3">
+                <!-- 사이드 바 메뉴-->
+                <div th:if="${index.index == 0}" class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">운동종류</h3>
+                    </div>
+                    <!-- 사이드바 메뉴목록1 -->
+                    <ul class="list-group">
+                        <li class="list-group-item"><a th:href="@{/crwal?search='등 운동'}">등</a></li>
+                        <li class="list-group-item"><a th:href="@{/crwal?search='어깨 운동'}">어깨</a></li>
+                        <li class="list-group-item"><a th:href="@{/crwal?search='가슴 운동'}">가슴</a></li>
+                        <li class="list-group-item"><a th:href="@{/crwal?search='팔 운동'}">팔</a></li>
+                        <li class="list-group-item"><a th:href="@{/crwal?search='유산소 운동'}">유산소</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cards-box" id="cards-box">
+                <div class="image-box">
+                    <!-- why not working onError Attr?-->
+                    <img class="img-fluid rounded-start" alt="..."
+                         th:src="${result.thumnail}"/>
+                </div>
+                <div class="middle-all">
+                    <div class="middle-box">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${result.title}">영상제목</h5>
+                            <p class="card-text" th:text="${result.views}" >조회수</p>
+                        </div>
+                    </div>
+                    <div class="btn-box">
+                        <a th:href="${result.url}" class="btn btn-primary" target="_blank">영상 링크</a>
+<!--                        <a href="#" class="btn btn-primary">후기</a>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--    크롤링 결과 ui css-->
+    <style>
+        .cards-box {
+            width: 60%; /* 기존에 100% */
+            height: 300px;
+            margin: 0 auto 20px auto;
+            /*이걸로 가운데 정렬 했다.*/
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%),
+            0 0 0 1px rgb(10 10 10 / 2%);
+        }
+
+        .image-box {
+            background-color: white;
+            width: 33.333%;
+            height: 300px;
+            float: left;
+
+            /*background-image: url('https://i.ytimg.com/vi/cLzuFGoS5xc/sddefault.jpg');*/
+            background-position: center;
+            background-size: cover;
+        }
+
+        /* About Description */
+        /* -------------------------------------------- */
+        .middle-all {
+            width: 33.333%;
+            height: 300px;
+            margin: auto;
+            float: left;
+            /* border-left: 1px solid #dbdbdb; */
+            /* border-right: 1px solid #dbdbdb; */
+        }
+
+        .middle-box {
+            width: 350px;
+            height: 252px;
+            float: left;
+        }
+
+        .btn-box {
+            width: 350px;
+            height: 48px;
+            margin-left: 20px;
+        }
+
+    </style>
+
+
+    <!-- footer -->
+    <div id='wrap'>
+        <footer class="py-5 bg-dark mt-auto">
+            <p class="m-0 text-center text-white">Copyright &copy; Hellmunity Website 2022</p>
+        </footer>
+    </div>
+
+    <style>
+        #wrap {
+            min-height: 20vh;
+            position: relative;
+            width: 100%;
+        }
+
+        footer {
+            width: 100%;
+            height: 110px;
+            /* 내용물에 따라 알맞는 값 설정 */
+            bottom: 0px;
+            position: absolute;
+        }
+
+        footer {
+            position: fixed;
+            left: 0px;
+            bottom: 0px;
+            height: 100px;
+            width: 100%;
+            background: grey;
+            color: white;
+            text-align: center
+        }
+    </style>
+</div>
+</body>
+
+</html>
